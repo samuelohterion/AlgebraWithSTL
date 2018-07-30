@@ -98,8 +98,7 @@ main( ) {
 
 	// hier muss der Pfasd zum main.cpp bei dir auf dem rechner eingetragen sein
 	CodePrinter
-	fp( "../Algebra/main.cpp" );
-//	fp( "/home/friedrich/Development/c++/2018.06.03/Algebra/main.cpp" );
+	fp( "../AlgebraWithSTL/main.cpp" );
 
 	fp.print( "examples" );
 //@examples
