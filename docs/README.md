@@ -8,7 +8,8 @@ with STL std::vector< T > as a mathematical vector and std::vector< std::vector<
 ### creating vectors
     std::vector< double >
     u = { 1., 2. };
-    // or shorter
+    // or shorter Vec< double > 
+    // or even shorter but only for double available
     VD
     v = { -1., 0., +1. };
 
@@ -17,7 +18,8 @@ with STL std::vector< T > as a mathematical vector and std::vector< std::vector<
     a = {
      {  1., 2. },
      { -2., 1. } };
-     // or shorter
+     // or shorter Mat< double >
+     // or even shorter but only for double available
     MD
     b = {
      { 1.,  0.,  0. },
