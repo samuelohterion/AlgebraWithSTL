@@ -357,15 +357,6 @@ operator |( Vec< T > const & p_lhs, Vec< T > const & p_rhs ) {
 
 template< typename T >
 Vec< T >
-& operator |=( Vec< T > & p_lhs, Mat< T > const & p_rhs ) {
-
-	p_lhs = p_lhs | p_rhs;
-
-	return p_lhs;
-}
-
-template< typename T >
-Vec< T >
 operator |( Vec< T > const & p_lhs, Mat< T > const & p_rhs ) {
 
 	Vec< T >
@@ -385,6 +376,14 @@ operator |( Vec< T > const & p_lhs, Mat< T > const & p_rhs ) {
 	}
 
 	return ret;
+}
+template< typename T >
+Vec< T >
+& operator |=( Vec< T > & p_lhs, Mat< T > const & p_rhs ) {
+
+	p_lhs = p_lhs | p_rhs;
+
+	return p_lhs;
 }
 
 template< typename T >

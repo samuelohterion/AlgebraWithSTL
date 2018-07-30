@@ -1,0 +1,74 @@
+# AlgebraWithSTL
+algebra, some math with std::vector&lt; T > and std::vector&lt; std::vector&lt; T > > 
+This is a small collection of some functions and operator overloadings for convenient work
+with STL std::vector< T > as a mathematical vector and std::vector< std::vector< T > > as a mathematical matrix.
+
+## creating vectors and matrices
+    using namespace std;
+
+### creating vectors
+    vector< double >
+    u = { 1., 2. };
+    // or shorter Vec< double > 
+    // or even shorter but only for double available
+    VD
+    v = { -1., 0., +1. },
+    w = { 1., 2., 3. };
+
+### creating matrices
+    vector< vector< double > >
+    a = {
+     {  1., 2. },
+     { -2., 1. } };
+     // or shorter Mat< double >
+     // or even shorter but only for double available
+    MD
+    b = {
+     { 1.,  0.,  0. },
+     { 0., +3., +4. },
+     { 0., -4., +3. } };
+     
+## unary operators
+### +/-
+    cout << +u << endl;
+    cout << -v << endl;
+    
+    cout << +a << endl;
+    cout << -b << endl;
+
+### ~ (transpose of a matrix)
+    std::cout << ~b << std::endl;
+
+# All binary operators as +,-,*,/ are used elementwise for vectors and matrices.
+
+## binary operators
+### scalar operator vector
+    cout << "2. + v" << endl << 2. + v << endl << endl;
+### scalar operator matrix
+    cout << "1 - a" << endl << 1 - a << endl << endl;
+### vector operator scalar
+    cout << "v * 3." << endl << v * 3. << endl << endl;
+### matrix operator scalar
+    cout << "a * 4." << endl << a * 4. << endl << endl;
+
+    cout << "b *= 3." << endl << v *= 3. << endl << endl;
+    
+    
+
+    cout << "v * w" << endl << v * w << endl << endl;
+    cout << "v /= w" << endl << v /= w << endl << endl;
+    
+## binary operators for matrices
+All binary operators as +,-,*,/ are used elementwise for vectors and matrices.
+    cout << "2. + v" << endl << 2. + v << endl << endl;
+    cout << "v - 1." << endl << v - 1. << endl << endl;
+    cout << "v *= 3." << endl << v *= 3. << endl << endl;
+    
+    VD
+    w = { 1., 2., 3. };
+
+    cout << "v * w" << endl << v * w << endl << endl;
+    cout << "v /= w" << endl << v /= w << endl << endl;
+    
+    
+     
