@@ -307,7 +307,6 @@ main( ) {
 
 	fp.print( "outer product" );
 //@outer product
-
 	u = { 1., 2. };
 	v = { -1., 0., 1. };
 
