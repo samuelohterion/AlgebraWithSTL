@@ -8,10 +8,11 @@ there are some small neuronal network examples
 
 ## how to build
 ### Qt-Creator-solution
-1. Easiest way is to compile and start the project in Qt-Creator!
-### otherwise
-1. Create some make file by yourself ( main.cpp depends on algebra.hpp and codeprinter.hpp )
+Easiest way is to compile and start the project in Qt-Creator!  
 
-## Use it
+### otherwise
+Create some make file by yourself ( main.cpp depends on algebra.hpp and codeprinter.hpp )  
+
+## Use it!
 2. Watch the output!
 3. Use the code by yourself!
