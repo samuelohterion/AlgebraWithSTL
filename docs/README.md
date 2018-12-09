@@ -29,8 +29,57 @@ algebra.hpp and codeprinter.hpp can be used just by including them your cpp file
 #include "algebra.hpp"
 #include "codeprinter.hpp"
 ```
-Now you're able use all that you've seen in the demo AlgebraWithSTL.  
-2 short examples (not in the demo):
+#### codeprinter usage
+```
+// One creates a CodePrinter object with path to main.cpp file that should be shown
+
+CodePrinter fp( "../AlgebraWithSTL/main.cpp" );
+
+// print block "examples"
+fp.print( "examples" );
+
+// a block
+// starts with //@BlockName
+// and ends with //@
+
+// so the "examples" block
+// starts with //@examples
+// and ends with //@
+
+//@examples
+  // Examples for using algebra.hpp
+  // -------- --- ----- -----------
+  // next with [ENTER]
+  // exit with x or X or q or Q and [ENTER] + [ENTER]
+  // do something nice here!
+//@
+  // WFE wait for enter, can be found in the main.cpp, also the print() function
+WFE
+// now the same with block "create a vector"
+fp.print( "create a vector" );
+//@create a vector
+  VD u = { 1., 2., 3., 4. };
+  print( "u", u );
+//@
+WFE
+// same procedure with "operator vector"
+fp.print( "operator vector" );
+//@operator vector
+  // some unary operators
+  print( "+u", +u );
+  print( "-u", -u );
+//@
+WFE
+...
+```
+#### algebra usage
+
+This is too much to show here again  
+Watch the demo and everything is clear!  
+But 2 short extr examples (not in the demo):
+^ works as outer product
+| works as inner product like in Vector x Vector, Matrix x Vector, Vector x Matrix, Matrix x Matrix
+here Vector x Vector is the scalar product
 ```
 Mat<double> zeta = {
   { 1. / 2., 0.,      0.      },

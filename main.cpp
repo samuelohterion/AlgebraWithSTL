@@ -79,7 +79,7 @@ VD
 bool
 waitForENTER( ) {
 
-	std::cout << "press [ENTER] for next step!\n";
+	std::cout << "Press [ENTER] for next show!\n";
 
 	int
 	c = std::cin.get( );
