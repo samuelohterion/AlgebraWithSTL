@@ -8,15 +8,17 @@ with STL std::vector<T> and std::vector<std::vector<T>> as mathematical objects.
 ## Whetting your appetite!   
 There are some small neuronal network examples  
 
-## How to build?
-### Qt-Creator-solution
-Easiest way is to compile and start the project in Qt-Creator!  
+## How to build and run?
+1. ### Qt-Creator
+  1. Load the Qt-Project "AlgebraWithSTL.pro" in Qt-Creator!
+  2. Press Play! 
 
-### Otherwise
-Create some make file by yourself and execute it  
-    ( main.cpp depends on algebra.hpp and codeprinter.hpp )  
+2. ### Console
+  1. Open a console and go into the source direcory AlgebraWithSTL!
+  2. Run make!  
+    ```.../AlgebraWithSTL$ make```
 
-## Then 
-1. Start it!
-2. Watch the output!
-3. Use the code by yourself!
+## Enjoy the Output! 
+2. Start it!
+3. Watch it!
+4. Use it!
