@@ -61,13 +61,12 @@ class CodePrinter {
 		print( std::string const & p_snippetname ) {
 
 			std::cout <<
-				"\n   c++ [" <<
+				"----------------------------------------------------------------------------------------------------------------" <<
+				"\n[" <<
 				p_snippetname <<
-				"]:\n\n" <<
+				"]\nc++:\n" <<
 				text[ p_snippetname ] <<
-				"\n   out [" <<
-				p_snippetname <<
-				"]:\n";
+				"\nout:\n";
 		}
 };
 
