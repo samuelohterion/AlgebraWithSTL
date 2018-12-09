@@ -4,5 +4,5 @@ run :	AlgebraWithSTL
 	./AlgebraWithSTL
 
 AlgebraWithSTL: main.cpp algebra.hpp codeprinter.hpp
-	g++ main.cpp -o AlgebraWithSTL
+	g++ main.cpp -o AWSTL
 

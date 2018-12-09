@@ -24,13 +24,14 @@ There are some small neuronal network examples
 3. Use it!
 
 ## How to use?
-algebra.hpp and codeprinter.hpp only has to be included in your cpp file like this  
+algebra.hpp and codeprinter.hpp can be used just by including them your cpp file.
 ```
 #include "algebra.hpp"
+#include "codeprinter.hpp"
 ```
-after that you can use all that you've seen in the demo AlgebraWithSTL like
+Now you're able use all that you've seen in the demo AlgebraWithSTL.  
+2 short examples (not in the demo):
 ```
-
 Mat<double> zeta = {
   { 1. / 2., 0.,      0.      },
   { 0.,      2. / 3., 0.      },
