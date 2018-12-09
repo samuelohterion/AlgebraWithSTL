@@ -1,6 +1,6 @@
 //@start
-#include <algebra.hpp>
-#include <codeprinter.hpp>
+#include "algebra.hpp"
+#include "codeprinter.hpp"
 #include <time.h>
 
 typedef Vec< double > VD;

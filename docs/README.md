@@ -12,8 +12,8 @@ there are some neuronal networks
 3. Use the code by yourself!
 
 ## otherwise
-1. create some make file by yourself
-    main.cpp depends on algebra.hpp and codeprinter.hpp
-2. use it
+1. Create some make file by yourself
+    ( main.cpp depends on algebra.hpp and codeprinter.hpp )
+2. Use it
 3. Watch the output!
 4. Use the code by yourself!
