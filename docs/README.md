@@ -1,10 +1,10 @@
 # AlgebraWithSTL
-some algebra with std::vector<T> and std::vector<std::vector<T>> 
-This is a small collection of some functions and operator overloadings for convenient work
-with STL std::vector<T> and std::vector<std::vector<T>> as a mathematical objects.
+some algebra with std::vector<T> and std::vector<std::vector<T>>   
+This is a small collection of some functions and operator overloadings for convenient work  
+with STL std::vector<T> and std::vector<std::vector<T>> as a mathematical objects.  
 
-As some small examples   
-there are some neuronal networks
+whetting your appetite   
+there are some small neuronal network examples  
 
 ## Qt-Creator-solution
 1. Easiest way is to compile and start the project in Qt-Creator!
