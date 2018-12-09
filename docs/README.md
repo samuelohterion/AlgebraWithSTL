@@ -1,9 +1,9 @@
 # AlgebraWithSTL
 some algebra with std::vector<T> and std::vector<std::vector<T>> 
 This is a small collection of some functions and operator overloadings for convenient work
-with STL std::vector<T> as a mathematical vector and std::vector<std::vector<T>> as a mathematical matrix.
+with STL std::vector<T> and std::vector<std::vector<T>> as a mathematical objects.
 
-As some small examples
+As some small examples   
 there are some neuronal networks
 
 ## Qt-Creator-solution
