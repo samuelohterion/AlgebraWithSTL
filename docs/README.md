@@ -1,9 +1,9 @@
 # AlgebraWithSTL
-some algebra, some math with std::vector&lt; T > and std::vector&lt; std::vector&lt; T > > 
+some algebra with std::vector<T> and std::vector<std::vector<T>> 
 This is a small collection of some functions and operator overloadings for convenient work
-with STL std::vector< T > as a mathematical vector and std::vector< std::vector< T > > as a mathematical matrix.
+with STL std::vector<T> as a mathematical vector and std::vector<std::vector<T>> as a mathematical matrix.
 
-As some small exammples
+As some small examples
 there are some neuronal networks
 
 ## Qt-Creator-solution
@@ -12,8 +12,7 @@ there are some neuronal networks
 3. Use the code by yourself!
 
 ## otherwise
-1. Create some make file by yourself
-    ( main.cpp depends on algebra.hpp and codeprinter.hpp )
+1. Create some make file by yourself ( main.cpp depends on algebra.hpp and codeprinter.hpp )
 2. Use it
 3. Watch the output!
 4. Use the code by yourself!
