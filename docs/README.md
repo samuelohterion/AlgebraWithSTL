@@ -1,18 +1,22 @@
 # AlgebraWithSTL
-some algebra with std::vector<T> and std::vector<std::vector<T>>  
+Some algebra with std::vector<T> and std::vector<std::vector<T>>
+
+## What's this about
 This is a small collection of some functions and operator overloadings for convenient work  
 with STL std::vector<T> and std::vector<std::vector<T>> as mathematical objects.  
 
-## whetting your appetite   
-there are some small neuronal network examples  
+## Whetting your appetite!   
+There are some small neuronal network examples  
 
-## how to build
+## How to build?
 ### Qt-Creator-solution
 Easiest way is to compile and start the project in Qt-Creator!  
 
-### otherwise
-Create some make file by yourself ( main.cpp depends on algebra.hpp and codeprinter.hpp )  
+### Otherwise
+Create some make file by yourself and execute it  
+    ( main.cpp depends on algebra.hpp and codeprinter.hpp )  
 
-## Use it!
+## Then 
+1. Start it!
 2. Watch the output!
 3. Use the code by yourself!
