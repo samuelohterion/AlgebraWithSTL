@@ -16,11 +16,17 @@
 #include <cstring>
 #include <initializer_list>
 
+// vector
 template<typename T > using
 Vec = std::vector< T >;
 
+// matrix
 template<typename T > using
 Mat = std::vector< std::vector< T > >;
+
+// tensor 3rd degree
+template<typename T > using
+Tsr = std::vector< std::vector< std::vector< T > > >;
 
 template<typename T >
 std::size_t
@@ -73,6 +79,13 @@ Vec< T >
 		acc( i, foo( i ) );
 
 	return p_vec;
+}
+
+template < typename T >
+Vec< T >
+slice( Vec< T > const p_vec, std::size_t p_from, std::size_t p_len ) {
+
+	return Vec< T >( p_vec.cbegin( ) + p_from, p_vec.cbegin( )+ p_from + p_len );
 }
 
 template < typename T >
@@ -460,10 +473,17 @@ eye( std::size_t const & p_rows ) {
 }
 
 template< typename T >
-Mat< T >
-ones( std::size_t const & p_rows, std::size_t const & p_cols = 0 ) {
+Vec< T >
+vcnst( std::size_t const & p_rows, T const & p_const = 0 ) {
 
-	return Mat< T >( p_rows, Vec< T >( p_cols == 0 ? p_rows : p_cols, 1 ) );
+	return Vec< T >( p_rows, p_const );
+}
+
+template< typename T >
+Mat< T >
+mcnst( std::size_t const & p_rows, std::size_t const & p_cols, T const & p_const = 0 ) {
+
+	return Mat< T >( p_rows, Vec< T >( p_cols == 0 ? p_rows : p_cols, p_const ) );
 }
 
 template< typename T >
@@ -490,6 +510,20 @@ mrnd( std::size_t const & p_rows, std::size_t const & p_cols = 0 ) {
 	for( auto & r : ret )
 
 		r = vrnd< T >( p_cols < 1 ? p_rows : p_cols );
+
+	return ret;
+}
+
+template< typename T >
+Tsr< T >
+trnd( std::size_t const & p_cells, std::size_t const & p_rows = 0, std::size_t const & p_cols = 0 ) {
+
+	Tsr< T >
+	ret( p_cells );
+
+	for( auto & r : ret )
+
+		r = mrnd< T >( p_rows < 1 ? p_cells : p_rows, p_cols );
 
 	return ret;
 }
