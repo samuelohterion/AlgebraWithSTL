@@ -24,7 +24,8 @@ There are some small neuronal network examples
 3. Use it!
 
 ## How to use?
-algebra.hpp and codeprinter.hpp can be used just by including them your cpp file.
+Just include algebra.hpp and codeprinter.hpp in your cpp file.  
+No linking against some library is neccessary.
 ```
 #include "algebra.hpp"
 #include "codeprinter.hpp"
@@ -77,12 +78,16 @@ CodePrinter::WFE( );
 ```
 #### algebra usage
 
-This is too much to show here again  
-Watch the demo and everything is clear!  
-But 2 short extr examples (not in the demo):
-^ works as outer product
-| works as inner product like in Vector x Vector, Matrix x Vector, Vector x Matrix, Matrix x Matrix
-here Vector x Vector is the scalar product
+This is too much to show here again.  
+Watch the demo and everything will be clear!  
+But 2 short examples (not in the demo):  
+^ works as outer product  
+| works as inner product like in  
+Vector x Vector,  
+Matrix x Vector,  
+Vector x Matrix,  
+Matrix x Matrix.  
+Here Vector x Vector is the scalar product
 ```
 Mat<double> zeta = {
   { 1. / 2., 0.,      0.      },

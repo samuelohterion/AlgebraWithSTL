@@ -486,7 +486,7 @@ main( ) {
 	MD
 	dW = delta[ 1 ] ^ neuron[ 1 ];
 
-	// adjust weights with our teaching rate .5 in hidden layer
+	// adjust weights with our half of our teaching rate .5 in hidden layer
 	weights[ 1 ] -= .5 * eta * dW;
 
 	print( "delta[ 1 ]", delta[ 1 ] );
@@ -882,6 +882,7 @@ main( ) {
 	for( std::size_t i = 0; i < 2; ++ i )
 		brain[ i ] = 2. * mrnd< double >( 5, 6 ) - 1.;
 
+	// learn 10000 sets
 	for( std::size_t loop = 1; loop <= 10000; ++ loop ) {
 
 		std::size_t
@@ -906,6 +907,7 @@ main( ) {
 		brain[ 1 ] -= .5 * eta * ( d[ 1 ] ^ o[ 1 ] );
 		brain[ 0 ] -=      eta * ( d[ 0 ] ^ o[ 0 ] );
 	}
+	// now the brain hopefully knows the letter A
 
 	// this is everything that's needed for remembering a pattern
 	#define REM for( std::size_t i = 0; i < 2; ++ i ) { addBias( o[ i ] ); o[ i + 1 ] = trnsfrm( brain[ i ] | o[ i ], act_0p1 ); }
