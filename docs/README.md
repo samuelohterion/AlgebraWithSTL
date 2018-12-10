@@ -33,10 +33,10 @@ algebra.hpp and codeprinter.hpp can be used just by including them your cpp file
 ```
 // One creates a CodePrinter object with path to main.cpp file that should be shown
 
-CodePrinter fp( "../AlgebraWithSTL/main.cpp" );
+CodePrinter cp( "../AlgebraWithSTL/main.cpp" );
 
 // print block "examples"
-fp.print( "examples" );
+cp.print( "examples" );
 
 // a block
 // starts with //@BlockName
@@ -54,22 +54,25 @@ fp.print( "examples" );
   // do something nice here!
 //@
   // WFE wait for enter, can be found in the main.cpp, also the print() function
-WFE
+CodePrinter::WFE( );
+
 // now the same with block "create a vector"
-fp.print( "create a vector" );
+cp.print( "create a vector" );
 //@create a vector
   VD u = { 1., 2., 3., 4. };
   print( "u", u );
 //@
-WFE
+CodePrinter::WFE( );
+
 // same procedure with "operator vector"
-fp.print( "operator vector" );
+cp.print( "operator vector" );
 //@operator vector
   // some unary operators
   print( "+u", +u );
   print( "-u", -u );
 //@
-WFE
+CodePrinter::WFE( );
+
 ...
 ```
 #### algebra usage
@@ -98,7 +101,7 @@ std::cout << "scalar product of primes and their positions is also prime! crazy!
   << std::endl;
 ```
 or
-```
+``` 
 Vec<int>
   v = {0,1,0,1,0,1,0,1};
   v = 2 * v - 1;

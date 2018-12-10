@@ -101,8 +101,8 @@ main( ) {
 	codeprinter.print( "create a vector" );
 //@create a vector
 	VD
-	u = { 0., 1., 2., 3., 4. },
-	v = { 1., 2., 3., 5., 7. };
+	u = { 0., 1., 2., 3. },
+	v = { 1., 2., 3., 5. };
 //@
 	CodePrinter::WFE( );
 
@@ -314,9 +314,6 @@ main( ) {
 
 	codeprinter.print( "outer product" );
 //@outer product
-	u = { 1., 2. };
-	v = { -1., 0., 1. };
-
 	print( "u", u );
 	print( "v", v );
 	print( "u ^ v", u ^ v );
