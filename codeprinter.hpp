@@ -68,6 +68,26 @@ class CodePrinter {
 				text[ p_snippetname ] <<
 				"\nout:\n";
 		}
+
+		static bool
+		waitForENTER( ) {
+
+			std::cout << "Press [ENTER] for next show!\n";
+
+			int
+			c = std::cin.get( );
+
+			return ( c == 'x' ) || ( c == 'X' ) || ( c == 'q' ) || ( c == 'Q' );
+		}
+
+		static bool
+		WFE ( ) {
+
+			if( waitForENTER( ) )
+				exit( -1 );
+
+			return true;
+		}
 };
 
 #endif // CODEPRINTER_HPP

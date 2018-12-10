@@ -8,7 +8,7 @@ typedef Mat< double > MD;
 typedef Tsr< double > TD;
 
 //@some useful function definitions
-	// just for neuro
+// just for neuro
 double
 sigmoid( double const & p_net, double const & p_ymin = 0., double const & p_ymax = 1. ) {
 
@@ -27,19 +27,6 @@ double
 act_m1p1( double const & p_net ) {
 
 	return sigmoid( p_net, -1., 1. );
-}
-
-// transformation function
-// transforms net sum to activation input
-VD
-trnsfrm( VD const & p_net, double ( *foo )( double const & ) ) {
-
-	VD
-	r( p_net );
-
-	fOr( r, assign, foo );
-
-	return r;
 }
 
 // first derivative of sigmoid function
@@ -74,25 +61,15 @@ VD
 
 	return p_vec;
 }
-//@
 
-bool
-waitForENTER( ) {
-
-	std::cout << "Press [ENTER] for next show!\n";
-
-	int
-	c = std::cin.get( );
-
-	return ( c == 'x' ) || ( c == 'X' ) || ( c == 'q' ) || ( c == 'Q' );
-}
-
+// print a string
 void
 print( std::string const & p_string ) {
 
 	std::cout << p_string << std::endl;
 }
 
+// print a string and a vector or a matrix or a tensor
 template< typename T >
 void
 print( std::string const & p_string, T const & p_v ) {
@@ -101,108 +78,104 @@ print( std::string const & p_string, T const & p_v ) {
 
 	std::cout << p_v << std::endl << std::endl;
 }
-
-#define WFE if( waitForENTER( ) ) return 0;
+//@
 
 int
 main( ) {
 
 	srand( time_t( nullptr ) );
 
-	// Hier muss der Pfasd zum main.cpp bei dir auf dem Rechner eingetragen sein
+	// arg isthis file
 	CodePrinter
-	fp( "../AlgebraWithSTL/main.cpp" );
+	codeprinter( "../AlgebraWithSTL/main.cpp" );
 
-	fp.print( "examples" );
+	codeprinter.print( "examples" );
 //@examples
 	// Examples for using algebra.hpp
 	// -------- --- ----- -----------
 	// next with [ENTER]
 	// exit with x or X or q or Q and [ENTER] + [ENTER]
 //@
-	WFE
+	CodePrinter::WFE( );
 
-	fp.print( "create a vector" );
+	codeprinter.print( "create a vector" );
 //@create a vector
 	VD
-	u = { 1., 2., 3., 4. };
+	u = { 0., 1., 2., 3., 4. },
+	v = { 1., 2., 3., 5., 7. };
+//@
+	CodePrinter::WFE( );
 
-	// print a vector
+	codeprinter.print( "print a vector" );
+//@print a vector
 	std::cout << "u" << std::endl << u << std::endl << std::endl;
-
-	// the same code as before, just for lazyness
+	// the same as before, just for lazyness
 	print( "u", u );
 //@
-	WFE
+	CodePrinter::WFE( );
 
-	fp.print( "operator vector" );
+	codeprinter.print( "operator vector" );
 //@operator vector
-	// some unary operators
 	print( "+u", +u );
 	print( "-u", -u );
-
-	// there is no unary operator for transposing a vector
-	// like ~ for matrices because
-	// the shape of the vector is implicitely defined by its use
-
-	// e.g.
-	// Mat | u   here u has to be a column vector
-	// u | Mat   here u is a row vector
-	// u | v     here u is a row, v is a column
-	// u ^ v     here u is a column, v is a row
 //@
-	WFE
+	CodePrinter::WFE( );
 
-	fp.print( "vector op scalar" );
-//@vector op scalar
+	codeprinter.print( "vector operator scalar" );
+//@vector operator scalar
 	print( "u + .5", u + .5 );
 	print( "u - .5", u - .5 );
 	print( "u * .5", u * .5 );
 	print( "u / .5", u / .5 );
+//@
+	CodePrinter::WFE( );
 
+	codeprinter.print( "vector assignment operator scalar" );
+//@vector assignment operator scalar
 	print( "u += .5", u += .5 );
 	print( "u -= .5", u -= .5 );
 	print( "u *= .5", u *= .5 );
 	print( "u /= .5", u /= .5 );
 //@
-	WFE
+	CodePrinter::WFE( );
 
-	fp.print( "scalar operator vector" );
+	codeprinter.print( "scalar operator vector" );
 //@scalar operator vector
 	print( ".5 + u", .5 + u );
 	print( ".5 - u", .5 - u );
 	print( ".5 * u", .5 * u );
 	print( ".5 / u", .5 / u );
 //@
-	WFE
+	CodePrinter::WFE( );
 
-	fp.print( "vector operator vector" );
+	codeprinter.print( "vector operator vector" );
 //@vector operator vector
-	VD
-	v = { 1., -1., 1., -1. };
-
-	print( "u", u );
-	print( "v", v );
 	print( "u + v", u + v );
 	print( "u - v", u - v );
 	print( "u * v", u * v );
 	print( "u / v", u / v );
+//@
+	CodePrinter::WFE( );
 
+	codeprinter.print( "vector assingment operator vector" );
+//@vector assingment operator vector
 	print( "u += v", u += v );
 	print( "u -= v", u -= v );
 	print( "u *= v", u *= v );
 	print( "u /= v", u /= v );
 //@
-	WFE
+	CodePrinter::WFE( );
 
-	fp.print( "operator matrix" );
-//@operator matrix
+//@create a matrix
 	MD
 	a = {
 		{ 1., 2., 3., 4. },
 		{ -2., 0., 2., 0. } };
+//@
+	CodePrinter::WFE( );
 
-	// some unary operators
+	codeprinter.print( "operator matrix" );
+//@operator matrix
 	print( "a", a );
 	print( "+a", +a );
 	print( "-a", -a );
@@ -210,61 +183,68 @@ main( ) {
 	// ~ gives the transposed matrix
 	print( "~a", ~a );
 //@
-	WFE
+	CodePrinter::WFE( );
 
-	fp.print( "matrix operator scalar" );
+	codeprinter.print( "matrix operator scalar" );
 //@matrix operator scalar
 	print( "a + .5", a + .5 );
 	print( "a - .5", a - .5 );
 	print( "a * .5", a * .5 );
 	print( "a / .5", a / .5 );
+//@
+	CodePrinter::WFE( );
+
+	codeprinter.print( "matrix assignment operator scalar" );
+//@matrix assignment operator scalar
 	print( "a += .5", a += .5 );
 	print( "a -= .5", a -= .5 );
 	print( "a *= .5", a *= .5 );
 	print( "a /= .5", a /= .5 );
 //@
-	WFE
+	CodePrinter::WFE( );
 
-	fp.print( "scalar operator matrix" );
+	codeprinter.print( "scalar operator matrix" );
 //@scalar operator matrix
 	print( ".5 + a", .5 + a );
 	print( ".5 - a", .5 - a );
 	print( ".5 * a", .5 * a );
 	print( ".5 / a", .5 / a );
 //@
-	WFE
+	CodePrinter::WFE( );
 
-	fp.print( "matrix operator vector" );
+	codeprinter.print( "matrix operator vector" );
 //@matrix operator vector
-	u = { -1., 1. };
+	VD
+	w = { -1., 1. };
 
 	print( "a", a );
-	print( "u", u );
-	print( "a + u", a + u );
-	print( "a - u", a - u );
-	print( "a * u", a * u );
-	print( "a / u", a / u );
-	print( "a += u", a += u );
-	print( "a -= u", a -= u );
-	print( "a *= u", a *= u );
-	print( "a /= u", a /= u );
+	print( "w", w );
+	print( "a + w", a + w );
+	print( "a - w", a - w );
+	print( "a * w", a * w );
+	print( "a / w", a / w );
 //@
-	WFE
+	CodePrinter::WFE( );
 
-	fp.print( "vector operator matrix" );
+	codeprinter.print( "matrix assignment operator vector" );
+//@matrix assignment operator vector
+	print( "a += w", a += w );
+	print( "a -= w", a -= w );
+	print( "a *= w", a *= w );
+	print( "a /= w", a /= w );
+//@
+	CodePrinter::WFE( );
+
+	codeprinter.print( "vector operator matrix" );
 //@vector operator matrix
-	u = v;
-
-	print( "a", a);
-	print( "u", u );
 	print( "u + a", u + a );
 	print( "u - a", u - a );
 	print( "u * a", u * a );
 	print( "u / a", u / a );
 //@
-	WFE
+	CodePrinter::WFE( );
 
-	fp.print( "matrix operator matrix" );
+	codeprinter.print( "matrix operator matrix" );
 //@matrix operator matrix
 	MD
 	b = {
@@ -277,31 +257,37 @@ main( ) {
 	print( "a - b", a - b );
 	print( "a * b", a * b );
 	print( "a / b", a / b );
+//@
+	CodePrinter::WFE( );
+
+	codeprinter.print( "matrix assignment operator matrix" );
+//@matrix assignment operator matrix
 	print( "a += b", a += b );
 	print( "a -= b", a -= b );
 	print( "a *= b", a *= b );
 	print( "a /= b", a /= b );
 //@
-	WFE
+	CodePrinter::WFE( );
 
-	fp.print( "some algebra" );
+	codeprinter.print( "some algebra" );
 //@some algebra
 	print( "u", u );
 	print( "v", v );
+
 //  scalar product
 	print( "u | v", u | v );
 //@
-	WFE
+	CodePrinter::WFE( );
 
-	fp.print( "matrix times vector" );
+	codeprinter.print( "matrix times vector" );
 //@matrix times vector
 	print( "u", u );
 	print( "b", b );
 	print( "b | u", b | u );
 //@
-	WFE
+	CodePrinter::WFE( );
 
-	fp.print( "vector times matrix" );
+	codeprinter.print( "vector times matrix" );
 //@vector times matrix
 	a = {
 		{ 1., 1., 1., 1. },
@@ -314,9 +300,9 @@ main( ) {
 	print( "v | a", v | a );
 	print( "v |= a", v |= a );
 //@
-	WFE
+	CodePrinter::WFE( );
 
-	fp.print( "matrix times matrix" );
+	codeprinter.print( "matrix times matrix" );
 //@matrix times matrix
 	print( "a", a );
 	print( "b", b );
@@ -324,9 +310,9 @@ main( ) {
 	print( "b | a", b | a );
 	print( "b |= a", b |= a );
 //@
-	WFE
+	CodePrinter::WFE( );
 
-	fp.print( "outer product" );
+	codeprinter.print( "outer product" );
 //@outer product
 	u = { 1., 2. };
 	v = { -1., 0., 1. };
@@ -336,9 +322,9 @@ main( ) {
 	print( "u ^ v", u ^ v );
 	print( "v ^ u", v ^ u );
 //@
-	WFE
+	CodePrinter::WFE( );
 
-	fp.print( "some functions" );
+	codeprinter.print( "some functions" );
 //@some functions
 	a = {
 		{ 3., 4. },
@@ -359,9 +345,9 @@ main( ) {
 	print( "round( 100. * mrnd< double >( 7, 2 ) )", round( 100. * mrnd< double >( 7, 2 ) ) );
 	print( "round( 100. * mrnd< double >( 3 ) )", round( 100. * mrnd< double >( 3 ) ) );
 //@
-	WFE
+	CodePrinter::WFE( );
 
-	fp.print( "now some neuro" );
+	codeprinter.print( "now some neuro" );
 //@now some neuro
 	// goal is to create a multi layer perceptron
 	// that numbers the 8 possible positions of the only one in a vector of zeros
@@ -374,13 +360,13 @@ main( ) {
 	// hidden 3 neurons + 1 bias
 	// output 3 neurons
 //@
-	WFE
+	CodePrinter::WFE( );
 
-	fp.print( "some useful function definitions" );
+	codeprinter.print( "some useful function definitions" );
 
-	WFE
+	CodePrinter::WFE( );
 
-	fp.print( "some definitions" );
+	codeprinter.print( "some definitions" );
 //@some definitions
 	//now some useful neuro lines
 
@@ -424,9 +410,9 @@ main( ) {
 		{ 1., 1., 0. },
 		{ 1., 1., 1. } };
 //@
-	WFE
+	CodePrinter::WFE( );
 
-	fp.print( "now remember pattern 3" );
+	codeprinter.print( "now remember pattern 3" );
 //@now remember pattern 3
 	// let's try a first pattern
 	std::size_t
@@ -458,9 +444,9 @@ main( ) {
 	neuron[ 2 ] = trnsfrm( net[ 1 ], act_0p1 );
 	print( "neuron[ 2 ]", neuron[ 2 ] );
 //@
-	WFE
+	CodePrinter::WFE( );
 
-	fp.print( "teach pattern 3 / get deltas" );
+	codeprinter.print( "teach pattern 3 / get deltas" );
 //@teach pattern 3 / get deltas
 	// how good was it?
 	VD
@@ -490,9 +476,9 @@ main( ) {
 	delta[ 0 ] = diffAct * dw;
 	print( "delta[ 0 ]", delta[ 0 ] );
 //@
-	WFE
+	CodePrinter::WFE( );
 
-	fp.print( "teach pattern 3 / change weights" );
+	codeprinter.print( "teach pattern 3 / change weights" );
 //@teach pattern 3 / change weights
 	// teaching rate is set to .5
 	double
@@ -522,9 +508,9 @@ main( ) {
 	print( "dW", dW );
 	print( "weights[ 0 ]", weights[ 0 ] );
 //@
-	WFE
+	CodePrinter::WFE( );
 
-	fp.print( "remember pattern 3 again" );
+	codeprinter.print( "remember pattern 3 again" );
 //@remember pattern 3 again
 	neuron[ 0 ] = teacherIn[ pattern ];
 	addBias( neuron[ 0 ] );
@@ -550,9 +536,9 @@ main( ) {
 	print( "error now:              ", round( errNow, 4 ) );
 	print( "improvememt in percent: ", 100. * round( ( err - errNow ) / errNow, 4 ) );
 //@
-	WFE
+	CodePrinter::WFE( );
 
-	fp.print( "now 10000 loops" );
+	codeprinter.print( "now 10000 loops" );
 //@now 10000 loops
 	for( std::size_t loop = 1; loop <= 10000; ++ loop ) {
 
@@ -609,15 +595,15 @@ main( ) {
 		print( "out", round( neuron[ 2 ], 2 ) );
 	}
 //@
-	WFE
+	CodePrinter::WFE( );
 
-	fp.print( "save the weights" );
+	codeprinter.print( "save the weights" );
 //@save the weights
 	save( "weights", weights );
 //@
-	WFE
+	CodePrinter::WFE( );
 
-	fp.print( "load weights again" );
+	codeprinter.print( "load weights again" );
 //@load weights again
 
 	VD
@@ -656,9 +642,9 @@ main( ) {
 		print( "out", round( neuron[ 2 ], 2 ) );
 	}
 //@
-	WFE
+	CodePrinter::WFE( );
 
-	fp.print( "XOR { 0, 1 } -> { 0, 1 }" );
+	codeprinter.print( "XOR { 0, 1 } -> { 0, 1 }" );
 //@XOR { 0, 1 } -> { 0, 1 }
 
 	MD
@@ -742,9 +728,9 @@ main( ) {
 		print( "out", round( o[ 2 ], 2 ) );
 	}
 //@
-	WFE
+	CodePrinter::WFE( );
 
-	fp.print( "XOR { -1, +1 } > { -1, +1 }" );
+	codeprinter.print( "XOR { -1, +1 } > { -1, +1 }" );
 //@XOR { -1, +1 } > { -1, +1 }
 
 	xorIn = {
@@ -823,9 +809,9 @@ main( ) {
 		print( "out", round( o[ 2 ], 2 ) );
 	}
 //@
-	WFE
+	CodePrinter::WFE( );
 
-	fp.print( "once again but shorter by using some vectors on stack" );
+	codeprinter.print( "once again but shorter by using some vectors on stack" );
 //@once again but shorter by using some vectors on stack
 
 	xorW = {
@@ -866,9 +852,9 @@ main( ) {
 		print( "out", round( o[ 2 ], 4 ) );
 	}
 //@
-	WFE
+	CodePrinter::WFE( );
 
-	fp.print( "ende" );
+	codeprinter.print( "ende" );
 //@ende
 	// finally a really brief example of a dreaming net
 	// task for the next brain is to remember the letter "A"

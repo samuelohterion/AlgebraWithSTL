@@ -83,6 +83,18 @@ Vec< T >
 
 template < typename T >
 Vec< T >
+trnsfrm( Vec< T > const & p_net, double ( *foo )( double const & ) ) {
+
+	Vec< T >
+	r( p_net );
+
+	fOr( r, assign, foo );
+
+	return r;
+}
+
+template < typename T >
+Vec< T >
 slice( Vec< T > const p_vec, std::size_t p_from, std::size_t p_len ) {
 
 	return Vec< T >( p_vec.cbegin( ) + p_from, p_vec.cbegin( )+ p_from + p_len );
@@ -474,16 +486,23 @@ eye( std::size_t const & p_rows ) {
 
 template< typename T >
 Vec< T >
-vcnst( std::size_t const & p_rows, T const & p_const = 0 ) {
+vcnst( std::size_t const & p_rows = 1, T const & p_const = 0 ) {
 
 	return Vec< T >( p_rows, p_const );
 }
 
 template< typename T >
 Mat< T >
-mcnst( std::size_t const & p_rows, std::size_t const & p_cols, T const & p_const = 0 ) {
+mcnst( std::size_t const & p_rows = 1, std::size_t const & p_cols = 0, T const & p_const = 0 ) {
 
 	return Mat< T >( p_rows, Vec< T >( p_cols == 0 ? p_rows : p_cols, p_const ) );
+}
+
+template< typename T >
+Tsr< T >
+tcnst( std::size_t const & p_cells = 1, std::size_t const & p_rows = 0, std::size_t const & p_cols = 0, T const & p_const = 0 ) {
+
+	return Tsr< T >( p_cells, Mat< T >( p_rows == 0 ? p_cells : p_rows, p_cols, p_const ) );
 }
 
 template< typename T >
@@ -530,7 +549,7 @@ trnd( std::size_t const & p_cells, std::size_t const & p_rows = 0, std::size_t c
 
 template< typename T >
 std::size_t
-maxWidthOfElements( Vec< T > const & p_vec ) {
+maxStringLengthOfElements( Vec< T > const & p_vec ) {
 
 	std::size_t
 	len = 0,
@@ -595,7 +614,7 @@ std::ostream
 
 	for( auto v : p_mat ) {
 
-		llen = maxWidthOfElements( v );
+		llen = maxStringLengthOfElements( v );
 
 		if( len < llen )
 
@@ -996,7 +1015,6 @@ load( std::ifstream & P_ifs, Vec< T > & p_vec ) {
 
 	return ret;
 }
-
 
 template< typename T >
 bool
