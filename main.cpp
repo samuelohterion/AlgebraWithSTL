@@ -62,24 +62,6 @@ VD
 	return p_vec;
 }
 
-// print a string
-void
-print( std::string const & p_string ) {
-
-	std::cout << p_string << std::endl;
-}
-
-// print a string and a vector or a matrix or a tensor
-template< typename T >
-void
-print( std::string const & p_string, T const & p_v ) {
-
-	print( p_string );
-
-	std::cout << p_v << std::endl << std::endl;
-}
-//@
-
 int
 main( ) {
 
@@ -157,8 +139,8 @@ main( ) {
 //@
 	CodePrinter::WFE( );
 
-	codeprinter.print( "vector assingment operator vector" );
-//@vector assingment operator vector
+	codeprinter.print( "vector assignment operator vector" );
+//@vector assignment operator vector
 	print( "u += v", u += v );
 	print( "u -= v", u -= v );
 	print( "u *= v", u *= v );
@@ -166,6 +148,7 @@ main( ) {
 //@
 	CodePrinter::WFE( );
 
+	codeprinter.print( "create a matrix" );
 //@create a matrix
 	MD
 	a = {

@@ -1117,4 +1117,20 @@ load( std::string const & P_filename, Vec< Vec< Vec< T > > > & p_ten ) {
 	return ret;
 }
 
+// print a string
+void
+print( std::string const & p_string ) {
+
+	std::cout << p_string << std::endl;
+}
+
+// print a string and a vector or a matrix or a tensor
+template< typename T >
+void
+print( std::string const & p_string, T const & p_v ) {
+
+	print( p_string );
+
+	std::cout << p_v << std::endl << std::endl;
+}
 #endif // ALGEBRA_HPP
