@@ -315,7 +315,7 @@ main( ) {
 	print( "a", a );
 	print( "~a", ~a );
 	print( "inv( a )", inv( a ) );
-	print( "abs( a )", abs( a ) );
+	print( "abs( a )", det( a ) );
 	print( "vcnst< double >( 2, 3 )", vcnst< double >( 2, 3 ) );
 	print( "round( a / 10., 1 )", round( a / 10., 1 ) );
 	print( "eye< double >( 5 )", eye< double >( 5 ) );
@@ -571,7 +571,7 @@ main( ) {
 		neuron[ 2 ] = trnsfrm( net[ 1 ], act_0p1 );
 
 		print( "-------------------------------------------" );
-		print( "in", slice( round( neuron[ 0 ], 2 ), 0, neuron[ 0 ].size( ) - 1 ) );
+		print( "in", sub( round( neuron[ 0 ], 2 ), 0, neuron[ 0 ].size( ) - 1 ) );
 		print( "out", round( neuron[ 2 ], 2 ) );
 	}
 //@
@@ -618,7 +618,7 @@ main( ) {
 		neuron[ 2 ] = trnsfrm( net[ 1 ], act_0p1 );
 
 		print( "-------------------------------------------" );
-		print( "in", slice( neuron[ 0 ], 0, neuron[ 0 ].size( ) - 1 ) );
+		print( "in", sub( neuron[ 0 ], 0, neuron[ 0 ].size( ) - 1 ) );
 		print( "out", round( neuron[ 2 ], 2 ) );
 	}
 //@
@@ -704,7 +704,7 @@ main( ) {
 		o[ 2 ] = trnsfrm( n[ 1 ], act_0p1 );
 
 		print( "-------------------------------------------" );
-		print( "in", slice( o[ 0 ], 0, o[ 0 ].size( ) - 1 ) );
+		print( "in", sub( o[ 0 ], 0, o[ 0 ].size( ) - 1 ) );
 		print( "out", round( o[ 2 ], 2 ) );
 	}
 //@
@@ -785,7 +785,7 @@ main( ) {
 		o[ 2 ] = trnsfrm( n[ 1 ], act_m1p1 );
 
 		print( "-------------------------------------------" );
-		print( "in", slice( o[ 0 ], 0, o[ 0 ].size( ) - 1 ) );
+		print( "in", sub( o[ 0 ], 0, o[ 0 ].size( ) - 1 ) );
 		print( "out", round( o[ 2 ], 2 ) );
 	}
 //@
@@ -828,7 +828,7 @@ main( ) {
 		}
 
 		print( "-------------------------------------------" );
-		print( "in", slice( o[ 0 ], 0, o[ 0 ].size( ) - 1 ) );
+		print( "in", sub( o[ 0 ], 0, o[ 0 ].size( ) - 1 ) );
 		print( "out", round( o[ 2 ], 4 ) );
 	}
 //@
