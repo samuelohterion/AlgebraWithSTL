@@ -761,14 +761,12 @@ inline std::ostream
 	return p_os;
 }
 
-// print a string
 inline void
 print( std::string const & p_string ) {
 
 	std::cout << p_string << std::endl;
 }
 
-// print a string and a vector or a matrix or a tensor
 template< typename T >
 inline void
 print( std::string const & p_string, T const & p_v ) {
@@ -935,36 +933,6 @@ detRec( Mat< T > const & p_m ) {
 
 	return detRec( p_m, 0, idx );
 }
-
-/*
-template < typename T >
-class Slice {
-
-	public:
-
-		Slice( Vec< T > & p_vec, IDX const & p_idx ) :
-		v( p_vec ),
-		idx( p_idx ) {
-
-		}
-
-	public:
-
-		Vec< T >
-		& v;
-
-		IDX
-		const & idx;
-
-	public:
-
-		T
-		& operator[ ] ( SIZE const & p_idx ) {
-
-			return v[ idx[ p_idx ] ];
-		}
-};
-*/
 
 template< typename T >
 inline T
@@ -1156,7 +1124,6 @@ solve( LRData< T > const & p_lr, Vec< T > const & p_v ) {
 	return x;
 }
 
-
 template< typename T >
 inline Mat< T >
 solve( LRData< T > const & p_lr, Mat< T > const & p_m ) {
@@ -1190,50 +1157,6 @@ det( Mat< T > const & p_m ) {
 	return lrdata.sign4Det * det;
 }
 
-/*
-template< typename T >
-Mat< T >
-inv2( Mat< T > const & p_m ) {
-
-	Mat< T >
-	ret = mcnst< T >( ncols( p_m ), nrows( p_m ), T( 0 ) );
-
-	T
-	abs_ = detRec( p_m );
-
-	if( abs_ * abs_ < 1e-50 )
-
-		return ret;
-
-	IDX
-	id_rows = permutationZero( n( p_m ) - 1 ) + 1ul;
-
-	for( SIZE r = 0; r < nrows( p_m ); ++ r ) {
-
-		if( r > 0 )
-
-			--id_rows[ r - 1 ];
-
-		IDX
-		id_cols = permutationZero( n( p_m ) - 1 ) + 1ul;
-
-		for( SIZE c = 0; c < ncols( p_m ); ++ c ) {
-
-			if( c > 0 )
-
-				--id_cols[ c - 1 ];
-
-			T
-			a = detRec( slice( p_m, id_rows, id_cols ) );
-
-			ret[ c ][ r ] = ( ( ( r + c ) & 0x1 ) == 0x1 ? -a : a );
-		}
-	}
-
-	return ret / abs_;
-}
-*/
-
 template< typename T >
 inline Mat< T >
 inv( Mat< T > const & p_m ) {
@@ -1241,32 +1164,67 @@ inv( Mat< T > const & p_m ) {
 	return t( solve( decompLR( p_m ), eye< T >( n( p_m ) ) ) );
 }
 
-inline double
-round( double const & p_v, int const & p_digits = 0 ) {
+template < typename T >
+T
+round( T const & p_v, int const & p_digits = 0 ) {
 
-	double
+	T
 	r = exp10( -p_digits ) * std::round( exp10( p_digits ) * p_v );
 
-	if( r * r < 1e-50 )
+	if( 0 >= r * r ) {
 
-		r = +0;
+		r = T( 0 );
+	}
 
 	return r;
 }
 
-template< typename T >
-inline Vec< T >
+template < template< class > class Complex, class T >
+Complex< T >
+round( Complex< T > const & p_v, int const & p_digits = 0 ) {
+
+	long double
+	a = exp10l( -p_digits ),
+	b = exp10l( +p_digits );
+
+	T
+	r = a * std::round( b * p_v.real( ) ),
+	i = a * std::round( b * p_v.imag( ) );
+
+	if( 0 >= r * r ) r = T( 0 );
+	if( 0 >= i * i ) i = T( 0 );
+
+	return Complex< T >( r, i  );
+}
+
+template < typename T >
+Vec< T >
 round( Vec< T > const & p_v, int const & p_digits = 0 ) {
 
 	Vec< T >
-	r = p_v;
+	v = p_v;
 
-	for( auto & s : r ) {
+	for( auto & s : v ) {
 
 		s = round( s, p_digits );
 	}
 
-	return r;
+	return v;
+}
+
+template < typename T >
+Mat< T >
+round( Mat< T > const & p_m, int const & p_digits = 0 ) {
+
+	Mat< T >
+	m = p_m;
+
+	for( auto & s : m ) {
+
+		s = round( s, p_digits );
+	}
+
+	return m;
 }
 
 template < typename T >

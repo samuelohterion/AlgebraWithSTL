@@ -911,6 +911,51 @@ main( ) {
 		o[ 0 ] = o[ 2 ];
 	}
 //@
+
+	CodePrinter::WFE( );
+
+	codeprinter.print( "And now for something completely different" );
+//@And now for something completely different
+
+	typedef std::complex< long double > CMPLX;
+//@
+
+	CodePrinter::WFE( );
+
+	codeprinter.print( "Pauli Matrices" );
+//@Pauli Matrices
+	Tsr< CMPLX >
+	sigma = {
+		{
+			{ CMPLX( 0.l, 0.l ), CMPLX( 1.l, 0.l ) },
+			{ CMPLX( 1.l, 0.l ), CMPLX( 0.l, 0.l ) } },
+		{
+			{ CMPLX( 0.l, 0.l ), CMPLX( 0.l, -1.l ) },
+			{ CMPLX( 0.l, 1.l ), CMPLX( 0.l,  0.l ) } },
+		{
+			{ CMPLX( 1.l, 0.l ), CMPLX(  0.l, 0.l ) },
+			{ CMPLX( 0.l, 0.l ), CMPLX( -1.l, 0.l ) } } };
+
+	print( "sigma1", sigma[ 0 ] );
+	print( "sigma2", sigma[ 1 ] );
+	print( "sigma3", sigma[ 2 ] );
+//@
+
+	CodePrinter::WFE( );
+
+	codeprinter.print( "some real 3d vector" );
+//@some real 3d vector
+	Vec< CMPLX >
+	p1 = { CMPLX( 2.l, 0.l ), CMPLX( 3.l, 0.l ), CMPLX( 5.l, 0.l ) };
+
+	print( "p1", p1 );
+
+	Mat< CMPLX >
+	sigma1Xp1 = { sigma[ 0 ] * p1[ 0 ] + sigma[ 1 ] * p1[ 1 ] + sigma[ 2 ] * p1[ 2 ] };
+
+	print( "sigma1Xp1", sigma1Xp1 );
+//@
+
 	return 0;
 }
 //@end
