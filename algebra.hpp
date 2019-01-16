@@ -181,6 +181,12 @@ trnsfrm( Vec< T > const & p_vec, double ( *foo )( double const & ) ) {
 	return r;
 }
 
+
+//template< typename T > inline T _plus( T const & p_v1, T const & p_v2 ) { return p_v1 + p_v2; }
+//template< typename T > inline T _minus( T const & p_v1, T const & p_v2 ) { return p_v1 - p_v2; }
+//template< typename T > inline T _multiplies( T const & p_v1, T const & p_v2 ) { return p_v1 * p_v2; }
+//template< typename T > inline T _divides( T const & p_v1, T const & p_v2 ) { return p_v1 / p_v2; }
+
 #define BINOPVV( OP, foo ) \
 template< typename T > inline Vec< T > operator OP( Vec< T > const & p_lhs, Vec< T > const & p_rhs ) { Vec< T > ret( p_lhs.size( ) ); \
 std::transform( p_lhs.cbegin( ), p_lhs.cend( ), p_rhs.cbegin( ), ret.begin( ), foo( ) ); return ret; }

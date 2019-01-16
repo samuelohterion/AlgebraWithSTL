@@ -331,9 +331,9 @@ main( ) {
 //@now some neuro
 	// goal is to create a multi layer perceptron
 	// that numbers the 8 possible positions of the only one in a vector of zeros
-	// 10000000 => 000
-	// 00010000 => 011
-	// 00000001 => 111
+	// 00000001 => 000
+	// 00001000 => 011
+	// 10000000 => 111
 
 	// mlp:
 	// inputs 8 neurons + 1 bias
@@ -907,7 +907,7 @@ main( ) {
 
 		std::cout << round( o[ 2 ] ) << std::endl;
 
-		//brain, watch what you've remembered!
+		//brain, think what you've remembered!
 		o[ 0 ] = o[ 2 ];
 	}
 //@
@@ -936,9 +936,9 @@ main( ) {
 			{ CMPLX( 1.l, 0.l ), CMPLX(  0.l, 0.l ) },
 			{ CMPLX( 0.l, 0.l ), CMPLX( -1.l, 0.l ) } } };
 
-	print( "sigma1", sigma[ 0 ] );
-	print( "sigma2", sigma[ 1 ] );
-	print( "sigma3", sigma[ 2 ] );
+	print( "sigma[ 0 ]", sigma[ 0 ] );
+	print( "sigma[ 1 ]", sigma[ 1 ] );
+	print( "sigma[ 2 ]", sigma[ 2 ] );
 //@
 
 	CodePrinter::WFE( );
