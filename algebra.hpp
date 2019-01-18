@@ -20,6 +20,90 @@
 #include <bitset>
 #include <complex>
 
+
+class STR :
+public std::string {
+
+	public:
+
+		STR( ) : std::string( ) {
+
+		}
+
+//		STR( STR const & p_s ) : std::string( p_s ) {
+
+//		}
+
+		STR( std::string const & p_s ) : std::string( p_s ) {
+
+		}
+
+		STR( char const * p_s ) : std::string( p_s ) {
+
+		}
+
+		STR( int const & p_number ) : std::string( ) {
+
+			std::stringstream
+			ss;
+
+			ss << p_number;
+
+			std::string( ss.str( ) );
+		}
+
+		STR
+		operator + ( STR const & p_s ) const {
+
+			return std::operator + ( std::operator + ( *this, " + " ), p_s );
+		}
+
+		STR
+		operator - ( STR const & p_s ) const {
+
+			return std::operator + ( std::operator + ( *this, " - " ), p_s );
+		}
+
+		STR
+		operator * ( STR const & p_s ) const {
+
+			return std::operator + ( std::operator + ( *this, " * " ), p_s );
+		}
+
+		STR
+		operator / ( STR const & p_s ) const {
+
+			return std::operator + ( std::operator + ( *this, " / " ), p_s );
+		}
+
+
+		STR
+		operator += ( STR const & p_s ) {
+
+			return *this = *this + p_s;
+		}
+
+		STR
+		operator -= ( STR const & p_s ) {
+
+			return *this = *this - p_s;
+		}
+
+		STR
+		operator *= ( STR const & p_s ) {
+
+			return *this = *this * p_s;
+		}
+
+		STR
+		operator /= ( STR const & p_s ) {
+
+			return *this = *this / p_s;
+		}
+
+
+};
+
 typedef std::size_t SIZE;
 
 bool

@@ -331,9 +331,9 @@ main( ) {
 //@now some neuro
 	// goal is to create a multi layer perceptron
 	// that numbers the 8 possible positions of the only one in a vector of zeros
-	// 00000001 => 000
-	// 00001000 => 011
-	// 10000000 => 111
+	// 10000000 => 000
+	// 00010000 => 011
+	// 00000001 => 111
 
 	// mlp:
 	// inputs 8 neurons + 1 bias
@@ -954,6 +954,33 @@ main( ) {
 	sigma1Xp1 = { sigma[ 0 ] * p1[ 0 ] + sigma[ 1 ] * p1[ 1 ] + sigma[ 2 ] * p1[ 2 ] };
 
 	print( "sigma1Xp1", sigma1Xp1 );
+//@
+
+	CodePrinter::WFE( );
+
+	codeprinter.print( "text" );
+//@text
+
+	Vec< STR >
+	ps = { "a", "b", "c" };
+
+	print( "ps", ps );
+
+	Mat< STR >
+	ms = { { "a00", "a01", "a02" }, { "a10", "a11", "a12" } };
+
+	print( "ms", ms );
+
+	print( "~ms", ~ms );
+
+	print( "ms | ~ms", ms | ~ms );
+
+	print( "~ms | ms", ~ms | ms );
+
+	print( "ms | ps", ms | ps );
+
+	print( "ps | ~ms", ps | ~ms );
+
 //@
 
 	return 0;
