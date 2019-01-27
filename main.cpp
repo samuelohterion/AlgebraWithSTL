@@ -331,9 +331,9 @@ main( ) {
 //@now some neuro
 	// goal is to create a multi layer perceptron
 	// that numbers the 8 possible positions of the only one in a vector of zeros
-	// 00000001 => 000
-	// 00001000 => 011
-	// 10000000 => 111
+	// 10000000 => 000
+	// 00010000 => 011
+	// 00000001 => 111
 
 	// mlp:
 	// inputs 8 neurons + 1 bias
@@ -946,14 +946,40 @@ main( ) {
 	codeprinter.print( "some real 3d vector" );
 //@some real 3d vector
 	Vec< CMPLX >
-	p1 = { CMPLX( 2.l, 0.l ), CMPLX( 3.l, 0.l ), CMPLX( 5.l, 0.l ) };
+	p = { CMPLX( 2.l, 0.l ), CMPLX( 3.l, 0.l ), CMPLX( 5.l, 0.l ) };
 
-	print( "p1", p1 );
+	print( "p1", p );
 
 	Mat< CMPLX >
-	sigma1Xp1 = { sigma[ 0 ] * p1[ 0 ] + sigma[ 1 ] * p1[ 1 ] + sigma[ 2 ] * p1[ 2 ] };
+	sigma1Xp1 = { sigma[ 0 ] * p[ 0 ] + sigma[ 1 ] * p[ 1 ] + sigma[ 2 ] * p[ 2 ] };
 
 	print( "sigma1Xp1", sigma1Xp1 );
+//@
+
+	CodePrinter::WFE( );
+
+	codeprinter.print( "text" );
+//@text
+
+	Vec< STR >
+	ps = { "x", "y", "z" };
+
+	print( "ps", ps );
+
+	Mat< STR >
+	ms = { { "a11", "a12", "a13" }, { "a21", "a22", "a23" } };
+
+	print( "ms", ms );
+
+	print( "~ms", ~ms );
+
+	print( "ms | ps", ms | ps );
+
+	print( "ps | ~ms", ps | ~ms );
+
+	print( "ms | ~ms", ms | ~ms );
+
+	print( "~ms | ms", ~ms | ms );
 //@
 
 	return 0;

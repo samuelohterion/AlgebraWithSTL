@@ -20,6 +20,96 @@
 #include <bitset>
 #include <complex>
 
+
+class STR :
+public std::string {
+
+	public:
+
+		STR( ) : std::string( ) {
+
+		}
+
+		STR( std::string const & p_s ) : std::string( p_s ) {
+
+		}
+
+		STR( char const * p_s ) : std::string( p_s ) {
+
+		}
+
+		STR( int const & p_number ) : std::string( ) {
+
+			std::stringstream
+			ss;
+
+			ss << p_number;
+
+			*this = ss.str( );
+		}
+
+		STR
+		operator + ( ) const {
+
+			return std::operator + ( "+", *this );
+		}
+
+		STR
+		operator - ( ) const {
+
+			return std::operator + ( "-", *this );
+		}
+
+		STR
+		operator + ( STR const & p_s ) const {
+
+			return std::operator + ( std::operator + ( std::operator + ( std::operator + ( "(", *this ), " + " ), p_s ), ")" );
+		}
+
+		STR
+		operator - ( STR const & p_s ) const {
+
+			return std::operator + ( std::operator + ( std::operator + ( std::operator + ( "(", *this ), " - " ), p_s ), ")" );
+		}
+
+		STR
+		operator * ( STR const & p_s ) const {
+
+			return std::operator + ( std::operator + ( *this, " * " ), p_s );
+		}
+
+		STR
+		operator / ( STR const & p_s ) const {
+
+			return std::operator + ( std::operator + ( *this, " / " ), p_s );
+		}
+
+
+		STR
+		operator += ( STR const & p_s ) {
+
+			return *this = *this + p_s;
+		}
+
+		STR
+		operator -= ( STR const & p_s ) {
+
+			return *this = *this - p_s;
+		}
+
+		STR
+		operator *= ( STR const & p_s ) {
+
+			return *this = *this * p_s;
+		}
+
+		STR
+		operator /= ( STR const & p_s ) {
+
+			return *this = *this / p_s;
+		}
+};
+
 typedef std::size_t SIZE;
 
 bool
@@ -481,9 +571,9 @@ inline T
 operator |( Vec< T > const & p_lhs, Vec< T > const & p_rhs ) {
 
 	T
-	s( 0 );
+	s = p_lhs[ 0 ] * p_rhs[ 0 ];
 
-	for( SIZE i = 0; i < p_lhs.size( ); ++ i  )
+	for( SIZE i = 1; i < p_lhs.size( ); ++ i  )
 
 		s +=  p_lhs[ i ] * p_rhs[ i ];
 
@@ -503,9 +593,9 @@ operator |( Vec< T > const & p_lhs, Mat< T > const & p_rhs ) {
 	for( SIZE c = 0; c < cols; ++ c ) {
 
 		T
-		sum = 0;
+		sum = p_lhs[ 0 ] * p_rhs[ 0 ][ c ];
 
-		for( SIZE r = 0; r < p_lhs.size( ); ++ r ) {
+		for( SIZE r = 1; r < p_lhs.size( ); ++ r ) {
 
 			sum += p_lhs[ r ] * p_rhs[ r ][ c ];
 		}
@@ -549,21 +639,20 @@ operator |( Mat< T > const & p_lhs, Mat< T > const & p_rhs ) {
 
 	SIZE
 	rows = nrows( p_lhs ),
-	cols = ncols( p_rhs );
+	cols = ncols( p_rhs ),
+	size = nrows( p_rhs );
 
 	Mat< T >
 	ret( rows, Vec< T >( cols ) );
-
-	T
-	s = 0;
 
 	for( SIZE r = 0; r < rows; ++ r ) {
 
 		for( SIZE c = 0; c < cols; ++ c ) {
 
-			s = 0;
+			T
+			s = p_lhs[ r ][ 0 ] * p_rhs[ 0 ][ c ];
 
-			for( SIZE i = 0; i < rows; ++ i ) {
+			for( SIZE i = 1; i < size; ++ i ) {
 
 				s += p_lhs[ r ][ i ] * p_rhs[ i ][ c ];
 			}
