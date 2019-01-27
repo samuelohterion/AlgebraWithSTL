@@ -118,8 +118,8 @@ std::cout << "checkerboard:\n" << checkerboard << std::endl;
 
 ```
 checkerboard:
-0 1 0 1 0 1 0 1
-1 0 1 0 1 0 1 0
+ 0 1 0 1 0 1 0 1
+ 1 0 1 0 1 0 1 0
  0 1 0 1 0 1 0 1
  1 0 1 0 1 0 1 0
  0 1 0 1 0 1 0 1
