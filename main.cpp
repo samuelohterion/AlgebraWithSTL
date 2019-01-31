@@ -1,4 +1,3 @@
-//@start
 #include "algebra.hpp"
 #include "codeprinter.hpp"
 #include <time.h>
@@ -15,14 +14,14 @@ sigmoid( double const & p_net, double const & p_ymin = 0., double const & p_ymax
 	return p_ymin + ( p_ymax - p_ymin ) / ( 1. + exp( - p_net ) );
 }
 
-// activation function for of input values between 0 and 1
+// activation function for input values between 0 and 1
 double
 act_0p1( double const & p_net ) {
 
 	return sigmoid( p_net, 0., 1. );
 }
 
-// activation function for of input values between -1 and +1
+// activation function for input values between -1 and +1
 double
 act_m1p1( double const & p_net ) {
 
@@ -53,21 +52,197 @@ diffAct_m1p1( double const & p_y ) {
 	return diffSigmoid( p_y, -1., 1. );
 }
 
-// add a bias neuron of constant .9 to vector
+// add a bias neuron of constant 1. to vector
 VD
 & addBias( VD & p_vec ) {
 
-	p_vec.push_back( .9 );
+	p_vec.push_back( 1. );
 
 	return p_vec;
 }
+//@
+
+//@Class Multilayer Perceptron
+class
+MLP {
+
+	public:
+
+		class
+		Sigmoid {
+
+			public:
+
+				double
+				mn,
+				mx;
+
+			public:
+
+				Sigmoid( double const & p_min, double const & p_max ) :
+				mn( p_min ),
+				mx( p_max ) {
+
+				}
+
+				double
+				operator ( ) ( const double & p_x ) const {
+
+					return mn + ( mx - mn ) / ( 1. + exp( - p_x ) );
+				}
+		};
+
+		class
+		DiffSigmoid {
+
+			public:
+
+				double
+				mn,
+				mx;
+
+			public:
+
+				DiffSigmoid( double const & p_min, double const & p_max ) :
+				mn( p_min ),
+				mx( p_max ) {
+
+				}
+
+				double
+				operator ( ) ( const double & p_y ) const {
+
+					double
+					a = ( p_y - mn ) / ( mx - mn );
+
+					return a - a * a;
+				}
+		};
+
+	public:
+
+		double
+		eta;
+
+		Vec< std::size_t >
+		layerSizes;
+
+		Mat< double >
+		o,
+		d;
+
+		Tsr< double >
+		w;
+
+		Sigmoid const
+		sig;
+
+		DiffSigmoid const
+		diffSig;
+
+	public:
+
+		MLP( std::initializer_list< std::size_t > const & p_layerSizes, double p_eta = .5, double const & p_min = 0., double const & p_max = 1. ) :
+		eta( p_eta ),
+		layerSizes( p_layerSizes.begin( ), p_layerSizes.end( ) ),
+		o( count( layerSizes ), Vec< double >( ) ),
+		d( count( layerSizes ), Vec< double >( ) ),
+		w( count( layerSizes ) - 1, Mat< double >( ) ),
+		sig( p_min, p_max ),
+		diffSig( p_min, p_max ) {
+
+			shuffleWeights( );
+		}
+
+	public:
+
+//		double
+//		sigmoid( double const & p_net, double const & p_min, double const & p_max ) const {
+
+//			return p_min + ( p_max - p_min ) / ( 1. + exp( - p_net ) );
+//		}
+
+		// first derivative of sigmoid function
+//		double
+//		diffSigmoid( double const & p_y ) const {
+
+//			double
+//			a = ( p_y - MIN ) / ( MAX - MIN );
+
+//			return a - a * a;
+//		}
+
+		// add a bias neuron of constant 1. to vector
+		VD
+		& addBias( VD & p_vec ) {
+
+			p_vec.push_back( 1. );
+
+			return p_vec;
+		}
+		//@
+		void
+		shuffleWeights( ) {
+
+			for( std::size_t i = 0; i < count( w ); ++ i ) {
+
+				w[ i ] = 2. * mrnd< double >( layerSizes[ i + 1 ], layerSizes[ i ] + 1 ) - 1.;
+			}
+		}
+
+		void
+		remember( Vec< double > const & p_pattern ) {
+
+			o[ 0 ] = p_pattern;
+
+			for( std::size_t i = 0; i < count( w ); ++ i ) {
+
+				addBias( o[ i ] );
+
+				o[ i + 1 ] = trnsfrm( w[ i ] | o[ i ], act_0p1 );
+			}
+		}
+
+		void
+		teach( Vec< double > const & p_pattern ) {
+
+			std::size_t
+			i = count( d ) - 1;
+
+			d[ i ] = o[ i ] - p_pattern;
+
+			d[ i - 1 ] = trnsfrm( o[ i ], diffSig ) * d[ i ];
+
+			while( 0 < -- i ) {
+
+				d[ i - 1 ] = trnsfrm( o[ i ], diffSig ) * ( d[ i ] | w[ i ] );
+			}
+
+			i = count( w );
+
+			while( -- i < count( w ) ){
+
+				w[ i ] -= eta * ( d[ i ] ^ o[ i ] );
+			}
+		}
+
+		void
+		showMemory( ) {
+
+			std::cout << o[ count( o ) - 1 ] << std::endl;
+		}
+};
+
+typedef MLP< 0, 1 > MLP01;
+typedef MLP< -1, 1 > MLPm1p1;
+//@
 
 int
 main( ) {
 
 	srand( time_t( nullptr ) );
 
-	// arg isthis file
+	// arg is this file
 	CodePrinter
 	codeprinter( "../AlgebraWithSTL/main.cpp" );
 
@@ -256,7 +431,6 @@ main( ) {
 //@some algebra
 	print( "u", u );
 	print( "v", v );
-
 //  scalar product
 	print( "u | v", u | v );
 //@
@@ -295,8 +469,8 @@ main( ) {
 //@
 	CodePrinter::WFE( );
 
-	codeprinter.print( "outer product" );
-//@outer product
+	codeprinter.print( "dyadic product" );
+//@dyadic product
 	print( "u", u );
 	print( "v", v );
 	print( "u ^ v", u ^ v );
@@ -310,12 +484,12 @@ main( ) {
 		{ 3., 4. },
 		{ -4., 3. } };
 
-	a +=  .0001;
+	a += .0001;
 
 	print( "a", a );
 	print( "~a", ~a );
 	print( "inv( a )", inv( a ) );
-	print( "abs( a )", det( a ) );
+	print( "det( a )", det( a ) );
 	print( "vcnst< double >( 2, 3 )", vcnst< double >( 2, 3 ) );
 	print( "round( a / 10., 1 )", round( a / 10., 1 ) );
 	print( "eye< double >( 5 )", eye< double >( 5 ) );
@@ -324,6 +498,133 @@ main( ) {
 	print( "mrnd< double >( 3, 2 )", mrnd< double >( 3, 2 ) );
 	print( "round( 100. * mrnd< double >( 7, 2 ) )", round( 100. * mrnd< double >( 7, 2 ) ) );
 	print( "round( 100. * mrnd< double >( 3 ) )", round( 100. * mrnd< double >( 3 ) ) );
+//@
+	CodePrinter::WFE( );
+
+	codeprinter.print( "And now for something completely different" );
+//@And now for something completely different
+	typedef std::complex< long double > CMPLX;
+//@
+	CodePrinter::WFE( );
+
+	codeprinter.print( "Pauli Matrices" );
+//@Pauli Matrices
+	// complex vector operator
+	Tsr< CMPLX >
+	sigma = {
+		{
+			{ CMPLX( 0.l, 0.l ), CMPLX( 1.l, 0.l ) },
+			{ CMPLX( 1.l, 0.l ), CMPLX( 0.l, 0.l ) } },
+		{
+			{ CMPLX( 0.l, 0.l ), CMPLX( 0.l, -1.l ) },
+			{ CMPLX( 0.l, 1.l ), CMPLX( 0.l,  0.l ) } },
+		{
+			{ CMPLX( 1.l, 0.l ), CMPLX(  0.l, 0.l ) },
+			{ CMPLX( 0.l, 0.l ), CMPLX( -1.l, 0.l ) } } };
+
+	print( "sigma[ 0 ]", sigma[ 0 ] );
+	print( "sigma[ 1 ]", sigma[ 1 ] );
+	print( "sigma[ 2 ]", sigma[ 2 ] );
+//@
+	CodePrinter::WFE( );
+
+	codeprinter.print( "complex 3d vector" );
+//@complex 3d vector
+	// only real values
+	Vec< CMPLX >
+	p = { CMPLX( 3.l, 0.l ), CMPLX( 3.l, 0.l ), CMPLX( 5.l, 0.l ) };
+
+	print( "p1", p );
+
+	Mat< CMPLX >
+	sigma1Xp1 = { sigma[ 0 ] * p[ 0 ] + sigma[ 1 ] * p[ 1 ] + sigma[ 2 ] * p[ 2 ] };
+
+	print( "sigma1Xp1", sigma1Xp1 );
+//@
+	CodePrinter::WFE( );
+
+	codeprinter.print( "invert ( sigma x p1 )" );
+//@invert ( sigma x p1 )
+	// complex vector operator
+	Mat< CMPLX >
+	sXpi = inv( sigma1Xp1 );
+
+	print( "sXpi = inv( sigma1Xp1 )\nround( sXpi, 4 )", round( sXpi, 4 ) );
+	print( "round( sXpi | sigma1Xp1, 4 )", round( sXpi | sigma1Xp1, 4 ) );
+	print( "round( sigma1Xp1 | sXpi, 4 )", round( sigma1Xp1 | sXpi, 4 ) );
+//@
+	CodePrinter::WFE( );
+
+	codeprinter.print( "now a realy big matrix 1000 x 1000" );
+//@now a realy big matrix 1000 x 1000
+	Mat< long double >
+	big1000x1000  = mrnd< long double >( 1000, 1000 ) - .5l;
+
+	// print only a 30x30 frame
+	print(
+		"round( sub( big1000x1000, 0, 0, 30, 30 ), 2 )",
+		 round( sub( big1000x1000, 0, 0, 30, 30 ), 2 ) );
+//@
+	CodePrinter::WFE( );
+
+	codeprinter.print( "calc its inverse" );
+//@calc its inverse
+	Mat< long double >
+	big1000x1000i = inv( big1000x1000 );
+
+	// print only a 30x30 frame again
+	print(
+		"round( sub( big1000x1000i, 0, 0, 30, 30 ), 2 )",
+		 round( sub( big1000x1000i, 0, 0, 30, 30 ), 2 ) );
+//@
+	CodePrinter::WFE( );
+
+	codeprinter.print( "check the result" );
+//@check the result
+	print(
+		"round( sub( big1000x1000i | big1000x1000, 0, 0, 100, 100 ), 2 )",
+		 round( sub( big1000x1000i | big1000x1000, 0, 0, 100, 100 ), 2 ) );
+//@
+	CodePrinter::WFE( );
+
+	codeprinter.print( "calculate the determinants of big1000x1000" );
+//@calculate the determinant of big1000x1000
+	long double
+	detBig = det( big1000x1000 );
+	print( "det( big1000x1000 )",  detBig );
+//@
+	CodePrinter::WFE( );
+
+	codeprinter.print( "calculate the determinants of big1000x1000i" );
+//@calculate the determinants of big1000x1000i
+	long double
+	detBigi = det( big1000x1000i );
+	print( "det( big1000x1000 )",  detBigi );
+	print( "det( big1000x1000i ) * det( big1000x1000 )", detBigi * detBig );
+//@
+	CodePrinter::WFE( );
+
+	codeprinter.print( "now some text fun" );
+//@now some text fun
+	Vec< STR >
+	ps = { "x", "y", "z" };
+
+	print( "ps", ps );
+
+	Mat< STR >
+	ms = { { "a11", "a12", "a13" }, { "a21", "a22", "a23" } };
+
+	print( "ms", ms );
+
+	print( "~ms", ~ms );
+
+	print( "ms | ps", ms | ps );
+
+	print( "ps | ~ms", ps | ~ms );
+
+	print( "ms | ~ms", ms | ~ms );
+
+	print( "~ms | ms", ~ms | ms );
 //@
 	CodePrinter::WFE( );
 
@@ -346,8 +647,8 @@ main( ) {
 
 	CodePrinter::WFE( );
 
-	codeprinter.print( "some definitions" );
-//@some definitions
+	codeprinter.print( "let's build a simple multilayer perceptron" );
+//@let's build a simple multilayer perceptron
 	//now some useful neuro lines
 
 	// build two random weights matrices with values between -1 and +1
@@ -585,7 +886,6 @@ main( ) {
 
 	codeprinter.print( "load weights again" );
 //@load weights again
-
 	VD
 	wv;
 
@@ -834,19 +1134,23 @@ main( ) {
 //@
 	CodePrinter::WFE( );
 
-	codeprinter.print( "ende" );
-//@ende
+	codeprinter.print( "Aaaa" );
+//@Aaaa
 	// finally a really brief example of a dreaming net
 	// task for the next brain is to remember the letter "A"
 	// having only pure emptiness as first input
 	// by memorizing its own memories
 	teacherIn = {
-		{ 0, 0, 0, 0, 0 },
-		{ 0, 0, 1, 0, 0 },
-		{ 0, 1, 0, 1, 0 },
-		{ 1, 1, 0, 1, 1 },
-		{ 1, 1, 1, 1, 1 },
-		{ 1, 0, 0, 0, 1 } };
+	//              minds
+	//    | conscious | subconscious |
+		{ 0, 0, 0, 0, 0,    0, 0 },
+		{ 0, 0, 1, 0, 0,    0, 0 },
+		{ 0, 1, 0, 1, 0,    0, 0 },
+		{ 1, 0, 0, 0, 1,    0, 0 },
+		{ 1, 1, 1, 1, 1,    0, 0 },
+		{ 1, 0, 0, 0, 1,    0, 1 },
+		{ 1, 0, 0, 0, 1,    1, 0 },
+		{ 1, 0, 0, 0, 1,    1, 1 } };
 
 	// remember simply what has to come next
 	teacherOut = {
@@ -855,18 +1159,22 @@ main( ) {
 		teacherIn[ 3 ],
 		teacherIn[ 4 ],
 		teacherIn[ 5 ],
+		teacherIn[ 6 ],
+		teacherIn[ 7 ],
 		teacherIn[ 0 ] };
 
 	// we need again 2 matrices of weights
 	TD
 	brain( 2 );
 
-	// every maps 5+1 neurons to 5
-	for( std::size_t i = 0; i < 2; ++ i )
-		brain[ i ] = 2. * mrnd< double >( 5, 6 ) - 1.;
+	// every maps 7+1 neurons to 8
+	for( std::size_t i = 0; i < count( brain ); ++ i ) {
 
-	// learn 10000 sets
-	for( std::size_t loop = 1; loop <= 10000; ++ loop ) {
+		brain[ i ] = 2. * mrnd< double >( 7, 8 ) - 1.;
+	}
+
+	// learn 100000 sets
+	for( std::size_t loop = 1; loop <= 100000; ++ loop ) {
 
 		std::size_t
 		pattern = static_cast< std::size_t >( rand( ) ) % teacherIn.size( );
@@ -893,95 +1201,77 @@ main( ) {
 	// now the brain hopefully knows the letter A
 
 	// this is everything that's needed for remembering a pattern
-	#define REM for( std::size_t i = 0; i < 2; ++ i ) { addBias( o[ i ] ); o[ i + 1 ] = trnsfrm( brain[ i ] | o[ i ], act_0p1 ); }
+	#define REM for( std::size_t i = 0; i < count( brain ); ++ i ) { addBias( o[ i ] ); o[ i + 1 ] = trnsfrm( brain[ i ] | o[ i ], act_0p1 ); }
 
 	// show our brain an empty vector and hope it will remember the letter A
-	o[ 0 ] = { 0, 0, 0, 0, 0 };
+	o[ 0 ] = { 0, 0, 0, 0, 0, 0, 0 };
 
 	// now remember some memories
-	std::cout << "Aaaaahhhhh!:" << std::endl;
+	std::cout << "Aaaa!:" << std::endl;
 
-	for( std::size_t i = 0; i < 3 * teacherIn.size( ); ++ i ) {
+	for( std::size_t i = 0; i < 4 * teacherIn.size( ); ++ i ) {
 
 		REM
 
-		std::cout << round( o[ 2 ] ) << std::endl;
+		for( std::size_t j = 0; j < 5; ++ j ) {
+
+			std::cout << ( o[ 2 ][ j ] < .5 ? ' ' : 'A' );
+		}
+
+		std::cout << std::endl;
 
 		//brain, think what you've remembered!
 		o[ 0 ] = o[ 2 ];
 	}
 //@
+	CodePrinter::WFE( );
+
+	codeprinter.print( "Time to put all we know in a class" );
+//@Time to put all we know in a class
+	// make a class mlp
+	// use it
+//@
+	CodePrinter::WFE( );
+
+	codeprinter.print( "Class Multilayer Perceptron" );
 
 	CodePrinter::WFE( );
 
-	codeprinter.print( "And now for something completely different" );
-//@And now for something completely different
+	codeprinter.print( "use class" );
 
-	typedef std::complex< long double > CMPLX;
+//@use class
+	xorIn = {
+		{ 0., 0. },
+		{ 0., 1. },
+		{ 1., 0. },
+		{ 1., 1. } };
+
+	xorOut = {
+		{ 0. },
+		{ 1. },
+		{ 1. },
+		{ 0. } };
+
+	MLP< >
+	mlp( { 2, 2, 1 }, .8 );
+
+	for( int i = 0; i < 10000; ++ i ) {
+
+		std::size_t
+		pId = rand( ) & 0x3;
+
+		mlp.remember( xorIn[ pId ] );
+		mlp.teach( xorOut[ pId ] );
+	}
+
+	for( std::size_t i = 0; i < 4; ++ i ) {
+
+		mlp.remember( xorIn[ i ] );
+
+		std::cout << xorIn[ i ] << std::endl;
+
+		mlp.showMemory( );
+	}
 //@
-
-	CodePrinter::WFE( );
-
-	codeprinter.print( "Pauli Matrices" );
-//@Pauli Matrices
-	Tsr< CMPLX >
-	sigma = {
-		{
-			{ CMPLX( 0.l, 0.l ), CMPLX( 1.l, 0.l ) },
-			{ CMPLX( 1.l, 0.l ), CMPLX( 0.l, 0.l ) } },
-		{
-			{ CMPLX( 0.l, 0.l ), CMPLX( 0.l, -1.l ) },
-			{ CMPLX( 0.l, 1.l ), CMPLX( 0.l,  0.l ) } },
-		{
-			{ CMPLX( 1.l, 0.l ), CMPLX(  0.l, 0.l ) },
-			{ CMPLX( 0.l, 0.l ), CMPLX( -1.l, 0.l ) } } };
-
-	print( "sigma[ 0 ]", sigma[ 0 ] );
-	print( "sigma[ 1 ]", sigma[ 1 ] );
-	print( "sigma[ 2 ]", sigma[ 2 ] );
-//@
-
-	CodePrinter::WFE( );
-
-	codeprinter.print( "some real 3d vector" );
-//@some real 3d vector
-	Vec< CMPLX >
-	p = { CMPLX( 2.l, 0.l ), CMPLX( 3.l, 0.l ), CMPLX( 5.l, 0.l ) };
-
-	print( "p1", p );
-
-	Mat< CMPLX >
-	sigma1Xp1 = { sigma[ 0 ] * p[ 0 ] + sigma[ 1 ] * p[ 1 ] + sigma[ 2 ] * p[ 2 ] };
-
-	print( "sigma1Xp1", sigma1Xp1 );
-//@
-
-	CodePrinter::WFE( );
-
-	codeprinter.print( "text" );
-//@text
-
-	Vec< STR >
-	ps = { "x", "y", "z" };
-
-	print( "ps", ps );
-
-	Mat< STR >
-	ms = { { "a11", "a12", "a13" }, { "a21", "a22", "a23" } };
-
-	print( "ms", ms );
-
-	print( "~ms", ~ms );
-
-	print( "ms | ps", ms | ps );
-
-	print( "ps | ~ms", ps | ~ms );
-
-	print( "ms | ~ms", ms | ~ms );
-
-	print( "~ms | ms", ~ms | ms );
-//@
-
 	return 0;
 }
-//@end

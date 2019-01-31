@@ -185,7 +185,7 @@ typedef Vec< long > SIDX ;
 
 template < typename T >
 inline SIZE
-n( Vec< T > const & p_vec ) {
+count( Vec< T > const & p_vec ) {
 
 	return p_vec.size( );
 }
@@ -241,7 +241,7 @@ inline Vec< T >
 fOr( Vec< T > & p_lhs, Vec< T > & p_rhs, void ( * acc )( T &, T const & ), T ( *foo )( T const &, T const & ) ) {
 
 	Vec< T >
-	ret( n( p_lhs ) );
+	ret( count( p_lhs ) );
 
 	auto
 	el = p_lhs.cend( ),
@@ -270,6 +270,7 @@ trnsfrm( Vec< T > const & p_vec, double ( *foo )( double const & ) ) {
 
 	return r;
 }
+
 
 
 //template< typename T > inline T _plus( T const & p_v1, T const & p_v2 ) { return p_v1 + p_v2; }
@@ -1089,7 +1090,7 @@ class LRData {
 		idx( size ),
 		sign4Det( 1 ) {
 
-			for( SIZE i = 0; i < n( idx ); ++ i ) {
+			for( SIZE i = 0; i < count( idx ); ++ i ) {
 
 				idx[ i ] = i;
 			}
@@ -1116,7 +1117,7 @@ decompLR( Mat< T > const & p_m ) {
 	lrdata( p_m );
 
 	SIZE
-	size = n( lrdata.idx );
+	size = count( lrdata.idx );
 
 	if( lrdata.idx.size( ) < 1 ) {
 
@@ -1256,7 +1257,7 @@ template< typename T >
 inline Mat< T >
 inv( Mat< T > const & p_m ) {
 
-	return t( solve( decompLR( p_m ), eye< T >( n( p_m ) ) ) );
+	return t( solve( decompLR( p_m ), eye< T >( count( p_m ) ) ) );
 }
 
 template < typename T >
@@ -1342,9 +1343,9 @@ inline Vec< T >
 sub ( Vec< T > const & p_vec, IDX const & p_idx ) {
 
 	Vec< T >
-	v( n( p_idx ) );
+	v( count( p_idx ) );
 
-	for( SIZE i = 0; i < n( p_idx ); ++ i ) {
+	for( SIZE i = 0; i < count( p_idx ); ++ i ) {
 
 		v[ i ] = p_vec[ p_idx[ i ] ];
 	}
@@ -1372,11 +1373,11 @@ inline Mat< T >
 sub ( Mat< T > const & p_mat, IDX const & p_ridx, IDX const & p_cidx ) {
 
 	Mat< T >
-	m( n( p_ridx ), n( p_cidx ) );
+	m( count( p_ridx ), count( p_cidx ) );
 
-	for( SIZE r = 0; r < n( p_ridx ); ++ r ) {
+	for( SIZE r = 0; r < count( p_ridx ); ++ r ) {
 
-		for( SIZE c = 0; c < n( p_cidx ); ++ c ) {
+		for( SIZE c = 0; c < count( p_cidx ); ++ c ) {
 
 			m[ r ][ c ] = p_mat[ p_ridx[ r ] ][ p_cidx[ c ] ];
 		}
