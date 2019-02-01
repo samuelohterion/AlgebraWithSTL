@@ -1,13 +1,12 @@
 #include "algebra.hpp"
 #include "codeprinter.hpp"
-#include <time.h>
 
+//@some useful function definitions
+// just for neuro
 typedef Vec< double > VD;
 typedef Mat< double > MD;
 typedef Tsr< double > TD;
 
-//@some useful function definitions
-// just for neuro
 double
 sigmoid( double const & p_net, double const & p_ymin = 0., double const & p_ymax = 1. ) {
 
@@ -154,24 +153,6 @@ MLP {
 			shuffleWeights( );
 		}
 
-	public:
-
-//		double
-//		sigmoid( double const & p_net, double const & p_min, double const & p_max ) const {
-
-//			return p_min + ( p_max - p_min ) / ( 1. + exp( - p_net ) );
-//		}
-
-		// first derivative of sigmoid function
-//		double
-//		diffSigmoid( double const & p_y ) const {
-
-//			double
-//			a = ( p_y - MIN ) / ( MAX - MIN );
-
-//			return a - a * a;
-//		}
-
 		// add a bias neuron of constant 1. to vector
 		VD
 		& addBias( VD & p_vec ) {
@@ -180,7 +161,7 @@ MLP {
 
 			return p_vec;
 		}
-		//@
+
 		void
 		shuffleWeights( ) {
 
@@ -199,7 +180,7 @@ MLP {
 
 				addBias( o[ i ] );
 
-				o[ i + 1 ] = trnsfrm( w[ i ] | o[ i ], act_0p1 );
+				o[ i + 1 ] = trnsfrm( w[ i ] | o[ i ], sig );
 			}
 		}
 
@@ -211,30 +192,40 @@ MLP {
 
 			d[ i ] = o[ i ] - p_pattern;
 
-			d[ i - 1 ] = trnsfrm( o[ i ], diffSig ) * d[ i ];
+			-- i;
 
-			while( 0 < -- i ) {
+			d[ i ] = trnsfrm( o[ i + 1 ], diffSig ) * d[ i + 1 ];
 
-				d[ i - 1 ] = trnsfrm( o[ i ], diffSig ) * ( d[ i ] | w[ i ] );
+			while( 0 < i ) {
+
+				d[ i - 1 ] = trnsfrm( sub( o[ i ], 0, o[ i ].size( ) - 1 ), diffSig ) * ( d[ i ] | w[ i ] );
+
+				-- i;
 			}
 
-			i = count( w );
+			double
+			e = eta;
 
-			while( -- i < count( w ) ){
+			for( std::size_t i = 0; i < count( w ); ++ i ) {
 
-				w[ i ] -= eta * ( d[ i ] ^ o[ i ] );
+				w[ i ] -= e * ( d[ i ] ^ o[ i ] );
+
+				e *= .5;
 			}
 		}
 
-		void
-		showMemory( ) {
+		Vec< double >
+		memory( ) {
 
-			std::cout << o[ count( o ) - 1 ] << std::endl;
+			return o[ count( o ) - 1 ];
+		}
+
+		double
+		rms( ) const {
+
+			return count( d ) && count( d[ count( d ) - 1 ] ) ? sqrt( d[ count( d ) - 1 ] | d[ count( d ) - 1 ] ) : 0.;
 		}
 };
-
-typedef MLP< 0, 1 > MLP01;
-typedef MLP< -1, 1 > MLPm1p1;
 //@
 
 int
@@ -558,7 +549,7 @@ main( ) {
 	codeprinter.print( "now a realy big matrix 1000 x 1000" );
 //@now a realy big matrix 1000 x 1000
 	Mat< long double >
-	big1000x1000  = mrnd< long double >( 1000, 1000 ) - .5l;
+	big1000x1000  = mrnd< long double >( 100, 100 ) - .5l;
 
 	// print only a 30x30 frame
 	print(
@@ -1107,7 +1098,7 @@ main( ) {
 
 		addBias( o[ 0 ] = xorIn[ pattern ] );
 		addBias( o[ 1 ] = trnsfrm( xorW[ 0 ] | o[ 0 ], act_m1p1 ) );
-		o[ 2 ] = trnsfrm( xorW[ 1 ] | o[ 1 ], act_m1p1 );
+				 o[ 2 ] = trnsfrm( xorW[ 1 ] | o[ 1 ], act_m1p1 );
 
 		d[ 1 ] = trnsfrm( o[ 2 ], diffAct_m1p1 ) * ( o[ 2 ] - xorOut[ pattern ] );
 		d[ 0 ] = trnsfrm( o[ 1 ], diffAct_m1p1 ) * ( d[ 1 ] | xorW[ 1 ] );
@@ -1237,40 +1228,78 @@ main( ) {
 
 	CodePrinter::WFE( );
 
-	codeprinter.print( "use class" );
+	codeprinter.print( "prepare new task: multiply two 3 bit numbers" );
+//@prepare new task: multiply 3 bits by 3 bits
+	MD
+	x_y = mcnst< double >( 64, 6 ),        // 64 x ( 3 + 3 ) bits: y = y2 y1 y0   x = x2 x1 x0
+	x_times_y = mcnst< double >( 64, 6 );  // 64 x 6 bits as result of x * y
 
-//@use class
-	xorIn = {
-		{ 0., 0. },
-		{ 0., 1. },
-		{ 1., 0. },
-		{ 1., 1. } };
+	for ( std::size_t y = 0; y < 8; ++ y ) {
 
-	xorOut = {
-		{ 0. },
-		{ 1. },
-		{ 1. },
-		{ 0. } };
+		for ( std::size_t x = 0; x < 8; ++ x ) {
 
-	MLP< >
-	mlp( { 2, 2, 1 }, .8 );
+			std::size_t
+			j = ( y << 3 ) + x;
 
-	for( int i = 0; i < 10000; ++ i ) {
+			for ( std::size_t i = 0; i < 6; ++ i ) {
 
-		std::size_t
-		pId = rand( ) & 0x3;
-
-		mlp.remember( xorIn[ pId ] );
-		mlp.teach( xorOut[ pId ] );
+				x_y      [ j ][ 5 - i ] = ( j         & ( 1ul << i ) ) == ( 1ul << i );
+				x_times_y[ j ][ 5 - i ] = ( ( y * x ) & ( 1ul << i ) ) == ( 1ul << i );
+			}
+		}
 	}
 
-	for( std::size_t i = 0; i < 4; ++ i ) {
+	print( "x_y", ~ x_y );
+	print( "x_times_y", ~ x_times_y );
+//@
+	CodePrinter::WFE( );
 
-		mlp.remember( xorIn[ i ] );
+	codeprinter.print( "use class" );
+//@use class
+	MLP
+	mlp( { 6, 8, 8, 6 }, .8, 0., 1. );
 
-		std::cout << xorIn[ i ] << std::endl;
+	for( std::size_t loop = 1; loop <= 1e6; ++ loop ) {
 
-		mlp.showMemory( );
+		std::size_t
+		pId = rand( ) & 0x3f;
+
+		mlp.remember( x_y[ pId ] );
+		mlp.teach( x_times_y[ pId ] );
+
+		if( ( loop == 1 ) || ( loop == 10 ) || ( loop == 1e2 ) || ( loop == 1e3 ) || ( loop == 1e4 ) || ( loop == 1e5 ) || ( loop == 1e6 ) ) {
+
+			print( "loop", loop );
+			print( "sse:", mlp.rms( ) );
+			std::cout
+				<< " --------------------------------------------- " << std::endl
+				<< "| Bits:                     0   correct 0     |" << std::endl
+				<< "| Bits:                     1 incorrect 0     |" << std::endl
+				<< "| Bits:                     2 incorrect 1     |" << std::endl
+				<< "| Bits:                     3   correct 1     |" << std::endl
+				<< " ---------- ---------------------------------- " << std::endl
+				<< "| Y        |  X        ==>  Z = X * Y         |" << std::endl
+				<< "| 2  1  0  |  2  1  0       5  4  3  2  1  0  |" << std::endl
+				<< " ----------+---------------------------------- " << std::endl;
+
+			for( std::size_t i = 0; i < 64; ++ i ) {
+
+				mlp.remember( x_y[ i ] );
+
+				std::cout
+					<< "| "
+					<< sub( x_y[ i ], 0, 3 )
+					<< "|  "
+					<< sub( x_y[ i ], 3, 3 )
+					<< "==>  "
+					<< round( mlp.memory( ) + 2. * x_times_y[ i ] )
+					<< "|"
+					<< std::endl;
+			}
+
+			std::cout
+				<< " ---------- ---------------------------------- " << std::endl << std::endl;
+		}
 	}
 //@
 	return 0;

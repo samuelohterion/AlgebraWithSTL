@@ -204,74 +204,36 @@ ncols( Mat< T > const & p_mat ) {
 	return p_mat[ 0 ].size( );
 }
 
-template < typename T >
+template < typename T, class Fun >
 inline void
-assign( T & p_el, T const & p_val ) {
+fOr( Vec< T > const & p_vec, Fun const & p_fun ) {
 
-	p_el = p_val;
+	std::for_each( p_vec.begin( ), p_vec.end( ), p_fun );
 }
 
-template < typename T >
-inline void
-cumsum( T & p_el, T const & p_val ) {
-
-	p_el = p_el + p_val;
-}
-
-template < typename T >
-inline void
-cumprod( T & p_el, T const & p_val ) {
-
-	p_el = p_el * p_val;
-}
-
-template < typename T >
-inline Vec< T >
-& fOr( Vec< T > & p_vec, void ( *acc )( T &, T const & ), T ( *foo )( T const & ) ) {
-
-	for( auto & i : p_vec )
-
-		acc( i, foo( i ) );
-
-	return p_vec;
-}
-
-template < typename T >
-inline Vec< T >
-fOr( Vec< T > & p_lhs, Vec< T > & p_rhs, void ( * acc )( T &, T const & ), T ( *foo )( T const &, T const & ) ) {
+template < typename T, class Fun >
+inline  Vec< T >
+trnsfrm( Vec< T > const & p_vec, Fun const & p_fun ) {
 
 	Vec< T >
-	ret( count( p_lhs ) );
+	r( p_vec.size( ) );
 
-	auto
-	el = p_lhs.cend( ),
-	sl = p_lhs.cbegin( ),
-	sr = p_rhs.cbegin( );
-
-	auto
-	d = ret.begin( );
-
-	while( sl != el ) {
-
-		acc( *d, foo( *sl, *sr ) );
-	}
-
-	return ret;
-}
-
-template < typename T >
-inline Vec< T >
-trnsfrm( Vec< T > const & p_vec, double ( *foo )( double const & ) ) {
-
-	Vec< T >
-	r( p_vec );
-
-	fOr( r, assign, foo );
+	std::transform( p_vec.begin( ), p_vec.end( ), r.begin( ), p_fun );
 
 	return r;
 }
 
+template < typename T, class Fun >
+inline Vec< T >
+trnsfrm( Vec< T > const & p_vec1, Vec< T > const & p_vec2, Fun const & p_fun ) {
 
+	Vec< T >
+	r( p_vec1.size( ) );
+
+	std::transform( p_vec1.begin( ), p_vec1.end( ), p_vec2.begin( ), p_vec2.end( ), r.begin( ), p_fun );
+
+	return r;
+}
 
 //template< typename T > inline T _plus( T const & p_v1, T const & p_v2 ) { return p_v1 + p_v2; }
 //template< typename T > inline T _minus( T const & p_v1, T const & p_v2 ) { return p_v1 - p_v2; }
