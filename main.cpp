@@ -1,625 +1,490 @@
-#include "algebra.hpp"
+#include "mlp.hpp"
 #include "codeprinter.hpp"
 
+using namespace alg;
+//@some typedefs for std::vector< T >
+// just for abbr.
+// vector
+// template < typename T > using
+// Vec = std::vector< T >;
+
+//// matrix
+// template < typename T > using
+// Mat = std::vector< std::vector< T > >;
+
+//// tensor 3rd degree
+// template < typename T > using
+// Tsr = std::vector< std::vector< std::vector< T > > >;
+
+//// tensor 4rd degree
+// template < typename T > using
+// Tsr4 = std::vector< std::vector< std::vector< std::vector< T > > > >;
+
+/*
+typedef std::size_t   UI;
+typedef Vec< UI >     VU;
+typedef double         D;
+typedef Vec< D >      VD;
+typedef Mat< D >      MD;
+typedef Tsr< D >      TD;
+*/
+//@
+
+/*
 //@some useful function definitions
 // just for neuro
-typedef Vec< double > VD;
-typedef Mat< double > MD;
-typedef Tsr< double > TD;
+D
+sigmoid(D const & p_net, D const & p_ymin = 0., D const & p_ymax = 1.) {
 
-double
-sigmoid( double const & p_net, double const & p_ymin = 0., double const & p_ymax = 1. ) {
-
-	return p_ymin + ( p_ymax - p_ymin ) / ( 1. + exp( - p_net ) );
+	return p_ymin + (p_ymax - p_ymin) / (1. + exp(- p_net));
 }
 
 // activation function for input values between 0 and 1
-double
-act_0p1( double const & p_net ) {
+D
+act_0p1(D const & p_net) {
 
-	return sigmoid( p_net, 0., 1. );
+	return sigmoid(p_net, 0., 1.);
 }
 
 // activation function for input values between -1 and +1
-double
-act_m1p1( double const & p_net ) {
+D
+act_m1p1(D const & p_net) {
 
-	return sigmoid( p_net, -1., 1. );
+	return sigmoid(p_net, -1., 1.);
 }
 
 // first derivative of sigmoid function
-double
-diffSigmoid( double const & p_y, double const & p_ymin = 0., double const & p_ymax = 1. ) {
+D
+diffSigmoid(D const & p_act , D const & p_ymin = 0., D const & p_ymax = 1.) {
 
-	double
-	a = ( p_y - p_ymin ) / ( p_ymax - p_ymin );
-
-	return a - a * a;
+	return .0001 + (p_act - p_ymin) * (p_ymax - p_act) / (p_ymax - p_ymin);
 }
 
 // first derivative of activation function act_0p1
-double
-diffAct_0p1( double const & p_y ) {
+D
+diffAct_0p1(D const & p_act) {
 
-	return diffSigmoid( p_y, 0., 1. );
+	return diffSigmoid(p_act, 0., 1.);
 }
 
 // first derivative of activation function act_m1p1
-double
-diffAct_m1p1( double const & p_y ) {
+D
+diffAct_m1p1(D const & p_act) {
 
-	return diffSigmoid( p_y, -1., 1. );
+	return diffSigmoid(p_act, -1., 1.);
 }
 
 // add a bias neuron of constant 1. to vector
 VD
-& addBias( VD & p_vec ) {
+& addBias(VD & p_vec) {
 
-	p_vec.push_back( 1. );
+	p_vec.push_back(1.);
 
 	return p_vec;
 }
 //@
-
-//@Class Multilayer Perceptron
-class
-MLP {
-
-	public:
-
-		class
-		Sigmoid {
-
-			public:
-
-				double
-				mn,
-				mx;
-
-			public:
-
-				Sigmoid( double const & p_min, double const & p_max ) :
-				mn( p_min ),
-				mx( p_max ) {
-
-				}
-
-				double
-				operator ( ) ( const double & p_x ) const {
-
-					return mn + ( mx - mn ) / ( 1. + exp( - p_x ) );
-				}
-		};
-
-		class
-		DiffSigmoid {
-
-			public:
-
-				double
-				mn,
-				mx;
-
-			public:
-
-				DiffSigmoid( double const & p_min, double const & p_max ) :
-				mn( p_min ),
-				mx( p_max ) {
-
-				}
-
-				double
-				operator ( ) ( const double & p_y ) const {
-
-					double
-					a = ( p_y - mn ) / ( mx - mn );
-
-					return a - a * a;
-				}
-		};
-
-	public:
-
-		double
-		eta;
-
-		Vec< std::size_t >
-		layerSizes;
-
-		Mat< double >
-		o,
-		d;
-
-		Tsr< double >
-		w;
-
-		Sigmoid const
-		sig;
-
-		DiffSigmoid const
-		diffSig;
-
-	public:
-
-		MLP( std::initializer_list< std::size_t > const & p_layerSizes, double p_eta = .5, double const & p_min = 0., double const & p_max = 1. ) :
-		eta( p_eta ),
-		layerSizes( p_layerSizes.begin( ), p_layerSizes.end( ) ),
-		o( count( layerSizes ), Vec< double >( ) ),
-		d( count( layerSizes ), Vec< double >( ) ),
-		w( count( layerSizes ) - 1, Mat< double >( ) ),
-		sig( p_min, p_max ),
-		diffSig( p_min, p_max ) {
-
-			shuffleWeights( );
-		}
-
-		// add a bias neuron of constant 1. to vector
-		VD
-		& addBias( VD & p_vec ) {
-
-			p_vec.push_back( 1. );
-
-			return p_vec;
-		}
-
-		void
-		shuffleWeights( ) {
-
-			for( std::size_t i = 0; i < count( w ); ++ i ) {
-
-				w[ i ] = 2. * mrnd< double >( layerSizes[ i + 1 ], layerSizes[ i ] + 1 ) - 1.;
-			}
-		}
-
-		void
-		remember( Vec< double > const & p_pattern ) {
-
-			o[ 0 ] = p_pattern;
-
-			for( std::size_t i = 0; i < count( w ); ++ i ) {
-
-				addBias( o[ i ] );
-
-				o[ i + 1 ] = trnsfrm( w[ i ] | o[ i ], sig );
-			}
-		}
-
-		void
-		teach( Vec< double > const & p_pattern ) {
-
-			std::size_t
-			i = count( d ) - 1;
-
-			d[ i ] = o[ i ] - p_pattern;
-
-			-- i;
-
-			d[ i ] = trnsfrm( o[ i + 1 ], diffSig ) * d[ i + 1 ];
-
-			while( 0 < i ) {
-
-				d[ i - 1 ] = trnsfrm( sub( o[ i ], 0, o[ i ].size( ) - 1 ), diffSig ) * ( d[ i ] | w[ i ] );
-
-				-- i;
-			}
-
-			double
-			e = eta;
-
-			for( std::size_t i = 0; i < count( w ); ++ i ) {
-
-				w[ i ] -= e * ( d[ i ] ^ o[ i ] );
-
-				e *= .5;
-			}
-		}
-
-		Vec< double >
-		memory( ) {
-
-			return o[ count( o ) - 1 ];
-		}
-
-		double
-		rms( ) const {
-
-			return count( d ) && count( d[ count( d ) - 1 ] ) ? sqrt( d[ count( d ) - 1 ] | d[ count( d ) - 1 ] ) : 0.;
-		}
-};
-//@
+*/
 
 int
-main( ) {
+main() {
 
-	srand( time_t( nullptr ) );
+	srand(time_t(nullptr));
 
 	// arg is this file
 	CodePrinter
-	codeprinter( "../AlgebraWithSTL/main.cpp" );
+	codeprinter("../AlgebraWithSTL/main.cpp", 4),
+	codeprinter_alg("../AlgebraWithSTL/algebra.hpp", 4),
+	codeprinter_mlp("../AlgebraWithSTL/mlp.hpp", 4);
 
-	codeprinter.print( "examples" );
+	codeprinter.print("some typedefs for std::vector< T >");
+	codeprinter_alg.print("even more abbr.");
+	codeprinter.print("examples");
 //@examples
 	// Examples for using algebra.hpp
 	// -------- --- ----- -----------
 	// next with [ENTER]
 	// exit with x or X or q or Q and [ENTER] + [ENTER]
 //@
-	CodePrinter::WFE( );
+	CodePrinter::WFE();
 
-	codeprinter.print( "create a vector" );
+	codeprinter.print("create a vector");
 //@create a vector
 	VD
-	u = { 0., 1., 2., 3. },
-	v = { 1., 2., 3., 5. };
+	u = {0., 1., 2., 3.},
+	v = {1., 2., 3., 5.};
 //@
-	CodePrinter::WFE( );
+	CodePrinter::WFE();
 
-	codeprinter.print( "print a vector" );
+	codeprinter.print("print a vector");
 //@print a vector
 	std::cout << "u" << std::endl << u << std::endl << std::endl;
 	// the same as before, just for lazyness
-	print( "u", u );
+	print("u", u);
 //@
-	CodePrinter::WFE( );
+	CodePrinter::WFE();
 
-	codeprinter.print( "operator vector" );
+	codeprinter.print("operator vector");
 //@operator vector
-	print( "+u", +u );
-	print( "-u", -u );
+	print("+u", +u);
+	print("-u", -u);
 //@
-	CodePrinter::WFE( );
+	CodePrinter::WFE();
 
-	codeprinter.print( "vector operator scalar" );
+	codeprinter.print("vector operator scalar");
 //@vector operator scalar
-	print( "u + .5", u + .5 );
-	print( "u - .5", u - .5 );
-	print( "u * .5", u * .5 );
-	print( "u / .5", u / .5 );
+	print("u + .5", u + .5);
+	print("u - .5", u - .5);
+	print("u * .5", u * .5);
+	print("u / .5", u / .5);
 //@
-	CodePrinter::WFE( );
+	CodePrinter::WFE();
 
-	codeprinter.print( "vector assignment operator scalar" );
+	codeprinter.print("vector assignment operator scalar");
 //@vector assignment operator scalar
-	print( "u += .5", u += .5 );
-	print( "u -= .5", u -= .5 );
-	print( "u *= .5", u *= .5 );
-	print( "u /= .5", u /= .5 );
+	print("u += .5", u += .5);
+	print("u -= .5", u -= .5);
+	print("u *= .5", u *= .5);
+	print("u /= .5", u /= .5);
 //@
-	CodePrinter::WFE( );
+	CodePrinter::WFE();
 
-	codeprinter.print( "scalar operator vector" );
+	codeprinter.print("scalar operator vector");
 //@scalar operator vector
-	print( ".5 + u", .5 + u );
-	print( ".5 - u", .5 - u );
-	print( ".5 * u", .5 * u );
-	print( ".5 / u", .5 / u );
+	print(".5 + u", .5 + u);
+	print(".5 - u", .5 - u);
+	print(".5 * u", .5 * u);
+	print(".5 / u", .5 / u);
 //@
-	CodePrinter::WFE( );
+	CodePrinter::WFE();
 
-	codeprinter.print( "vector operator vector" );
+	codeprinter.print("vector operator vector");
 //@vector operator vector
-	print( "u + v", u + v );
-	print( "u - v", u - v );
-	print( "u * v", u * v );
-	print( "u / v", u / v );
+	print("u + v", u + v);
+	print("u - v", u - v);
+	print("u * v", u * v);
+	print("u / v", u / v);
 //@
-	CodePrinter::WFE( );
+	CodePrinter::WFE();
 
-	codeprinter.print( "vector assignment operator vector" );
+	codeprinter.print("vector assignment operator vector");
 //@vector assignment operator vector
-	print( "u += v", u += v );
-	print( "u -= v", u -= v );
-	print( "u *= v", u *= v );
-	print( "u /= v", u /= v );
+	print("u += v", u += v);
+	print("u -= v", u -= v);
+	print("u *= v", u *= v);
+	print("u /= v", u /= v);
 //@
-	CodePrinter::WFE( );
+	CodePrinter::WFE();
 
-	codeprinter.print( "create a matrix" );
+	codeprinter.print("create a matrix");
 //@create a matrix
 	MD
 	a = {
-		{ 1., 2., 3., 4. },
-		{ -2., 0., 2., 0. } };
+		{+1., +2., +3., +4.},
+		{-2., +0., +2., +0.}};
 //@
-	CodePrinter::WFE( );
+	CodePrinter::WFE();
 
-	codeprinter.print( "operator matrix" );
+	codeprinter.print("operator matrix");
 //@operator matrix
-	print( "a", a );
-	print( "+a", +a );
-	print( "-a", -a );
+	print("a", a);
+	print("+a", +a);
+	print("-a", -a);
 
 	// ~ gives the transposed matrix
-	print( "~a", ~a );
+	print("~a", ~a);
 //@
-	CodePrinter::WFE( );
+	CodePrinter::WFE();
 
-	codeprinter.print( "matrix operator scalar" );
+	codeprinter.print("matrix operator scalar");
 //@matrix operator scalar
-	print( "a + .5", a + .5 );
-	print( "a - .5", a - .5 );
-	print( "a * .5", a * .5 );
-	print( "a / .5", a / .5 );
+	print("a + .5", a + .5);
+	print("a - .5", a - .5);
+	print("a * .5", a * .5);
+	print("a / .5", a / .5);
 //@
-	CodePrinter::WFE( );
+	CodePrinter::WFE();
 
-	codeprinter.print( "matrix assignment operator scalar" );
+	codeprinter.print("matrix assignment operator scalar");
 //@matrix assignment operator scalar
-	print( "a += .5", a += .5 );
-	print( "a -= .5", a -= .5 );
-	print( "a *= .5", a *= .5 );
-	print( "a /= .5", a /= .5 );
+	print("a += .5", a += .5);
+	print("a -= .5", a -= .5);
+	print("a *= .5", a *= .5);
+	print("a /= .5", a /= .5);
 //@
-	CodePrinter::WFE( );
+	CodePrinter::WFE();
 
-	codeprinter.print( "scalar operator matrix" );
+	codeprinter.print("scalar operator matrix");
 //@scalar operator matrix
-	print( ".5 + a", .5 + a );
-	print( ".5 - a", .5 - a );
-	print( ".5 * a", .5 * a );
-	print( ".5 / a", .5 / a );
+	print(".5 + a", .5 + a);
+	print(".5 - a", .5 - a);
+	print(".5 * a", .5 * a);
+	print(".5 / a", .5 / a);
 //@
-	CodePrinter::WFE( );
+	CodePrinter::WFE();
 
-	codeprinter.print( "matrix operator vector" );
+	codeprinter.print("matrix operator vector");
 //@matrix operator vector
 	VD
-	w = { -1., 1. };
+	w = {-1., 1.};
 
-	print( "a", a );
-	print( "w", w );
-	print( "a + w", a + w );
-	print( "a - w", a - w );
-	print( "a * w", a * w );
-	print( "a / w", a / w );
+	print("a", a);
+	print("w", w);
+	print("a + w", a + w);
+	print("a - w", a - w);
+	print("a * w", a * w);
+	print("a / w", a / w);
 //@
-	CodePrinter::WFE( );
+	CodePrinter::WFE();
 
-	codeprinter.print( "matrix assignment operator vector" );
+	codeprinter.print("matrix assignment operator vector");
 //@matrix assignment operator vector
-	print( "a += w", a += w );
-	print( "a -= w", a -= w );
-	print( "a *= w", a *= w );
-	print( "a /= w", a /= w );
+	print("a += w", a += w);
+	print("a -= w", a -= w);
+	print("a *= w", a *= w);
+	print("a /= w", a /= w);
 //@
-	CodePrinter::WFE( );
+	CodePrinter::WFE();
 
-	codeprinter.print( "vector operator matrix" );
+	codeprinter.print("vector operator matrix");
 //@vector operator matrix
-	print( "u + a", u + a );
-	print( "u - a", u - a );
-	print( "u * a", u * a );
-	print( "u / a", u / a );
+	print("u + a", u + a);
+	print("u - a", u - a);
+	print("u * a", u * a);
+	print("u / a", u / a);
 //@
-	CodePrinter::WFE( );
+	CodePrinter::WFE();
 
-	codeprinter.print( "matrix operator matrix" );
+	codeprinter.print("matrix operator matrix");
 //@matrix operator matrix
 	MD
 	b = {
-		{ 1., 1., 1., 1. },
-		{ -1., 1., -1., 1. } };
+		{+1., +1., +1., +1.},
+		{-1., +1., -1., +1.}};
 
-	print( "a", a );
-	print( "b", b );
-	print( "a + b", a + b );
-	print( "a - b", a - b );
-	print( "a * b", a * b );
-	print( "a / b", a / b );
+	print("a", a);
+	print("b", b);
+	print("a + b", a + b);
+	print("a - b", a - b);
+	print("a * b", a * b);
+	print("a / b", a / b);
 //@
-	CodePrinter::WFE( );
+	CodePrinter::WFE();
 
-	codeprinter.print( "matrix assignment operator matrix" );
+	codeprinter.print("matrix assignment operator matrix");
 //@matrix assignment operator matrix
-	print( "a += b", a += b );
-	print( "a -= b", a -= b );
-	print( "a *= b", a *= b );
-	print( "a /= b", a /= b );
+	print("a += b", a += b);
+	print("a -= b", a -= b);
+	print("a *= b", a *= b);
+	print("a /= b", a /= b);
 //@
-	CodePrinter::WFE( );
+	CodePrinter::WFE();
 
-	codeprinter.print( "some algebra" );
+	codeprinter.print("some algebra");
 //@some algebra
-	print( "u", u );
-	print( "v", v );
+	print("u", u);
+	print("v", v);
 //  scalar product
-	print( "u | v", u | v );
+	print("u | v", u | v);
 //@
-	CodePrinter::WFE( );
+	CodePrinter::WFE();
 
-	codeprinter.print( "matrix times vector" );
+	codeprinter.print("matrix times vector");
 //@matrix times vector
-	print( "u", u );
-	print( "b", b );
-	print( "b | u", b | u );
+	print("u", u);
+	print("b", b);
+	print("b | u", b | u);
 //@
-	CodePrinter::WFE( );
+	CodePrinter::WFE();
 
-	codeprinter.print( "vector times matrix" );
+	codeprinter.print("vector times matrix");
 //@vector times matrix
 	a = {
-		{ 1., 1., 1., 1. },
-		{ 1., -1., 1., -1. },
-		{ 1., 1., -1., -1. },
-		{ 1., -1., -1., 1. } };
+		{+1., +1., +1., +1.},
+		{+1., -1., +1., -1.},
+		{+1., +1., -1., -1.},
+		{+1., -1., -1., +1.}};
 
-	print( "v", v );
-	print( "a", a );
-	print( "v | a", v | a );
-	print( "v |= a", v |= a );
+	print("v", v);
+	print("a", a);
+	print("v | a", v | a);
+	print("v |= a", v |= a);
 //@
-	CodePrinter::WFE( );
+	CodePrinter::WFE();
 
-	codeprinter.print( "matrix times matrix" );
+	codeprinter.print("matrix times matrix");
 //@matrix times matrix
-	print( "a", a );
-	print( "b", b );
-	print( "a | ~b", a | ~b );
-	print( "b | a", b | a );
-	print( "b |= a", b |= a );
+	print("a", a);
+	print("b", b);
+	print("a | ~b", a | ~b);
+	print("b | a", b | a);
+	print("b |= a", b |= a);
 //@
-	CodePrinter::WFE( );
+	CodePrinter::WFE();
 
-	codeprinter.print( "dyadic product" );
+	codeprinter.print("dyadic product");
 //@dyadic product
-	print( "u", u );
-	print( "v", v );
-	print( "u ^ v", u ^ v );
-	print( "v ^ u", v ^ u );
+	print("u", u);
+	print("v", v);
+	print("u ^ v", u ^ v);
+	print("v ^ u", v ^ u);
 //@
-	CodePrinter::WFE( );
+	CodePrinter::WFE();
 
-	codeprinter.print( "some functions" );
+	codeprinter.print("some functions");
 //@some functions
 	a = {
-		{ 3., 4. },
-		{ -4., 3. } };
+		{+3., +4.},
+		{-4., +3.}};
 
 	a += .0001;
 
-	print( "a", a );
-	print( "~a", ~a );
-	print( "inv( a )", inv( a ) );
-	print( "det( a )", det( a ) );
-	print( "vcnst< double >( 2, 3 )", vcnst< double >( 2, 3 ) );
-	print( "round( a / 10., 1 )", round( a / 10., 1 ) );
-	print( "eye< double >( 5 )", eye< double >( 5 ) );
-	print( "mcnst< double >( 2, 3, 6 )", mcnst< double >( 2, 3, 6. ) );
-	print( "vrnd< double >( 3 )", vrnd< double >( 3 ) );
-	print( "mrnd< double >( 3, 2 )", mrnd< double >( 3, 2 ) );
-	print( "round( 100. * mrnd< double >( 7, 2 ) )", round( 100. * mrnd< double >( 7, 2 ) ) );
-	print( "round( 100. * mrnd< double >( 3 ) )", round( 100. * mrnd< double >( 3 ) ) );
+	print("a", a);
+	print("~a", ~a);
+	print("inv(a)", inv(a));
+	print("det(a)", det(a));
+	print("vcnst< D >(2, 3)", vcnst< D >(2, 3));
+	print("round(a / 10., 1)", round(a / 10., 1));
+	print("eye< D >(5)", eye< D >(5));
+	print("mcnst< D >(2, 3, 6)", mcnst< D >(2, 3, 6.));
+	print("vrnd< D >(3)", vrnd< D >(3));
+	print("mrnd< D >(3, 2)", mrnd< D >(3, 2));
+	print("round(100. * mrnd< D >(7, 2))", round(100. * mrnd< D >(7, 2)));
+	print("round(100. * mrnd< D >(3))", round(100. * mrnd< D >(3)));
 //@
-	CodePrinter::WFE( );
+	CodePrinter::WFE();
 
-	codeprinter.print( "And now for something completely different" );
+	codeprinter.print("And now for something completely different");
 //@And now for something completely different
 	typedef std::complex< long double > CMPLX;
 //@
-	CodePrinter::WFE( );
+	CodePrinter::WFE();
 
-	codeprinter.print( "Pauli Matrices" );
+	codeprinter.print("Pauli Matrices");
 //@Pauli Matrices
 	// complex vector operator
 	Tsr< CMPLX >
 	sigma = {
 		{
-			{ CMPLX( 0.l, 0.l ), CMPLX( 1.l, 0.l ) },
-			{ CMPLX( 1.l, 0.l ), CMPLX( 0.l, 0.l ) } },
+			{CMPLX(0.l, 0.l), CMPLX(1.l, 0.l)},
+			{CMPLX(1.l, 0.l), CMPLX(0.l, 0.l)}},
 		{
-			{ CMPLX( 0.l, 0.l ), CMPLX( 0.l, -1.l ) },
-			{ CMPLX( 0.l, 1.l ), CMPLX( 0.l,  0.l ) } },
+			{CMPLX(0.l, 0.l), CMPLX(0.l, -1.l)},
+			{CMPLX(0.l, 1.l), CMPLX(0.l,  0.l)}},
 		{
-			{ CMPLX( 1.l, 0.l ), CMPLX(  0.l, 0.l ) },
-			{ CMPLX( 0.l, 0.l ), CMPLX( -1.l, 0.l ) } } };
+			{CMPLX(1.l, 0.l), CMPLX( 0.l, 0.l)},
+			{CMPLX(0.l, 0.l), CMPLX(-1.l, 0.l)}}};
 
-	print( "sigma[ 0 ]", sigma[ 0 ] );
-	print( "sigma[ 1 ]", sigma[ 1 ] );
-	print( "sigma[ 2 ]", sigma[ 2 ] );
+	print("sigma[0]", sigma[0]);
+	print("sigma[1]", sigma[1]);
+	print("sigma[2]", sigma[2]);
 //@
-	CodePrinter::WFE( );
+	CodePrinter::WFE();
 
-	codeprinter.print( "complex 3d vector" );
+	codeprinter.print("complex 3d vector");
 //@complex 3d vector
 	// only real values
 	Vec< CMPLX >
-	p = { CMPLX( 3.l, 0.l ), CMPLX( 3.l, 0.l ), CMPLX( 5.l, 0.l ) };
+	p = {CMPLX(3.l, 0.l), CMPLX(3.l, 0.l), CMPLX(5.l, 0.l)};
 
-	print( "p1", p );
+	print("p1", p);
 
 	Mat< CMPLX >
-	sigma1Xp1 = { sigma[ 0 ] * p[ 0 ] + sigma[ 1 ] * p[ 1 ] + sigma[ 2 ] * p[ 2 ] };
+	sigma1Xp1 = {sigma[0] * p[0] + sigma[1] * p[1] + sigma[2] * p[2]};
 
-	print( "sigma1Xp1", sigma1Xp1 );
+	print("sigma1Xp1", sigma1Xp1);
 //@
-	CodePrinter::WFE( );
+	CodePrinter::WFE();
 
-	codeprinter.print( "invert ( sigma x p1 )" );
-//@invert ( sigma x p1 )
+	codeprinter.print("invert (sigma x p1)");
+//@invert (sigma x p1)
 	// complex vector operator
 	Mat< CMPLX >
-	sXpi = inv( sigma1Xp1 );
+	sXpi = inv(sigma1Xp1);
 
-	print( "sXpi = inv( sigma1Xp1 )\nround( sXpi, 4 )", round( sXpi, 4 ) );
-	print( "round( sXpi | sigma1Xp1, 4 )", round( sXpi | sigma1Xp1, 4 ) );
-	print( "round( sigma1Xp1 | sXpi, 4 )", round( sigma1Xp1 | sXpi, 4 ) );
+	print("sXpi = inv(sigma1Xp1)\nround(sXpi, 4)", round(sXpi, 4));
+	print("round(sXpi | sigma1Xp1, 4)", round(sXpi | sigma1Xp1, 4));
+	print("round(sigma1Xp1 | sXpi, 4)", round(sigma1Xp1 | sXpi, 4));
 //@
-	CodePrinter::WFE( );
+	CodePrinter::WFE();
 
-	codeprinter.print( "now a realy big matrix 1000 x 1000" );
-//@now a realy big matrix 1000 x 1000
+	codeprinter.print("now a realy big matrix 100 x 100");
+//@now a realy big matrix 100 x 100
 	Mat< long double >
-	big1000x1000  = mrnd< long double >( 100, 100 ) - .5l;
+	big100x100  = mrnd< long double >(100, 100) - .5l;
 
 	// print only a 30x30 frame
 	print(
-		"round( sub( big1000x1000, 0, 0, 30, 30 ), 2 )",
-		 round( sub( big1000x1000, 0, 0, 30, 30 ), 2 ) );
+		"round(sub(big100x100, 0, 0, 30, 30), 2)",
+		 round(sub(big100x100, 0, 0, 30, 30), 2));
 //@
-	CodePrinter::WFE( );
+	CodePrinter::WFE();
 
-	codeprinter.print( "calc its inverse" );
+	codeprinter.print("calc its inverse");
 //@calc its inverse
 	Mat< long double >
-	big1000x1000i = inv( big1000x1000 );
+	big100x100i = inv(big100x100);
 
 	// print only a 30x30 frame again
 	print(
-		"round( sub( big1000x1000i, 0, 0, 30, 30 ), 2 )",
-		 round( sub( big1000x1000i, 0, 0, 30, 30 ), 2 ) );
+		"round(sub(big100x100i, 0, 0, 30, 30), 2)",
+		 round(sub(big100x100i, 0, 0, 30, 30), 2));
 //@
-	CodePrinter::WFE( );
+	CodePrinter::WFE();
 
-	codeprinter.print( "check the result" );
+	codeprinter.print("check the result");
 //@check the result
 	print(
-		"round( sub( big1000x1000i | big1000x1000, 0, 0, 100, 100 ), 2 )",
-		 round( sub( big1000x1000i | big1000x1000, 0, 0, 100, 100 ), 2 ) );
+		"round(sub(big100x100i | big100x100, 0, 0, 100, 100), 2)",
+		 round(sub(big100x100i | big100x100, 0, 0, 100, 100), 2));
 //@
-	CodePrinter::WFE( );
+	CodePrinter::WFE();
 
-	codeprinter.print( "calculate the determinants of big1000x1000" );
-//@calculate the determinant of big1000x1000
+	codeprinter.print("calculate the determinant of big100x100");
+//@calculate the determinant of big100x100
 	long double
-	detBig = det( big1000x1000 );
-	print( "det( big1000x1000 )",  detBig );
+	detBig = det(big100x100);
+	print("det(big100x100)",  detBig);
 //@
-	CodePrinter::WFE( );
+	CodePrinter::WFE();
 
-	codeprinter.print( "calculate the determinants of big1000x1000i" );
-//@calculate the determinants of big1000x1000i
+	codeprinter.print("calculate the determinant of big100x100i");
+//@calculate the determinant of big100x100i
 	long double
-	detBigi = det( big1000x1000i );
-	print( "det( big1000x1000 )",  detBigi );
-	print( "det( big1000x1000i ) * det( big1000x1000 )", detBigi * detBig );
+	detBigi = det(big100x100i);
+	print("det(big100x100)",  detBigi);
+	print("det(big100x100i) * det(big100x100)", detBigi * detBig);
 //@
-	CodePrinter::WFE( );
+	CodePrinter::WFE();
 
-	codeprinter.print( "now some text fun" );
+	codeprinter.print("now some text fun");
 //@now some text fun
 	Vec< STR >
-	ps = { "x", "y", "z" };
+	ps = {"x", "y", "z"};
 
-	print( "ps", ps );
+	print("ps", ps);
 
 	Mat< STR >
-	ms = { { "a11", "a12", "a13" }, { "a21", "a22", "a23" } };
+	ms = {{"a11", "a12", "a13"}, {"a21", "a22", "a23"}};
 
-	print( "ms", ms );
+	print("ms", ms);
 
-	print( "~ms", ~ms );
+	print("~ms", ~ms);
 
-	print( "ms | ps", ms | ps );
+	print("ms | ps", ms | ps);
 
-	print( "ps | ~ms", ps | ~ms );
+	print("ps | ~ms", ps | ~ms);
 
-	print( "ms | ~ms", ms | ~ms );
+	print("ms | ~ms", ms | ~ms);
 
-	print( "~ms | ms", ~ms | ms );
+	print("~ms | ms", ~ms | ms);
 //@
-	CodePrinter::WFE( );
+	CodePrinter::WFE();
 
-	codeprinter.print( "now some neuro" );
+
+/*
+
+
+	codeprinter.print("now some neuro");
 //@now some neuro
 	// goal is to create a multi layer perceptron
 	// that numbers the 8 possible positions of the only one in a vector of zeros
@@ -632,500 +497,503 @@ main( ) {
 	// hidden 3 neurons + 1 bias
 	// output 3 neurons
 //@
-	CodePrinter::WFE( );
+	CodePrinter::WFE();
 
-	codeprinter.print( "some useful function definitions" );
+	codeprinter.print("some useful function definitions");
 
-	CodePrinter::WFE( );
+	CodePrinter::WFE();
 
-	codeprinter.print( "let's build a simple multilayer perceptron" );
+	codeprinter.print("let's build a simple multilayer perceptron");
 //@let's build a simple multilayer perceptron
 	//now some useful neuro lines
 
 	// build two random weights matrices with values between -1 and +1
 	// first one connects the 8 + 1 = 9 input neurons to 3 hidden neurons
 	// second one connects the 3 + 1 = 4 hidden neurons to 3 output neurons
-	TD // actually this is not a tensor but only a Vec< MD > aka std::vector< std::vector< std::vector< double > > >
+	TD // actually this is not a tensor but only a Vec< MD > aka std::vector< std::vector< std::vector< D > > >
 	weights = {
-		round( 2. * mrnd< double >( 3, 9 ) - 1., 2 ),
-		round( 2. * mrnd< double >( 3, 4 ) - 1., 2 )
+		round(2. * mrnd< D >(3, 9) - 1., 2),
+		round(2. * mrnd< D >(3, 4) - 1., 2)
 	};
 
 	// show weights for input and hidden layers
-	print( "weights[ 0 ]", weights[ 0 ] );
-	print( "weights[ 1 ]", weights[ 1 ] );
+	print("weights[0]", weights[0]);
+	print("weights[1]", weights[1]);
 
 	// we need 7 more vectors
+	// one to store the input vector
 	// 3 ones to store values of activation of neurons for 3 layers (in hidden out)
 	// 2 ones to store values of net sums for 2 layers  (in hidden)
 	// 2 ones to store error vectors delta  (in hidden)
-	MD // actually this is not a matrix but only a Vec< VD > aka std::vector< std::vector< double > >
-	neuron( 3 ),
-	net( 2 ),
-	delta( 2 );
+	MD // actually this is not a matrix but only a Vec< VD > aka std::vector< std::vector< D > >
+	neuron(3),
+	net(2),   // input neurons don't need net sums, so the index for net[0] are the net sum for the 1st hidden layer
+	delta(2); // input neurons don't need deltas, so the index for delta[0] are the deltas for the 1st hidden layer
 
 	// an 8 dimensional unit matrix stores 8 teacher vectors (00000001, 00000010, ..., 10000000)
 	// remember: position of the "One" is what should be learned by the net
 	MD
-	teacherIn = eye< double >( 8 );
+	teacherIn = eye< D >(8);
 
 	// here the answer set
 	// every row of this matrix should be remembered by its representant in teacherIn
 	MD
 	teacherOut = {
-		{ 0., 0., 0. },
-		{ 0., 0., 1. },
-		{ 0., 1., 0. },
-		{ 0., 1., 1. },
-		{ 1., 0., 0. },
-		{ 1., 0., 1. },
-		{ 1., 1., 0. },
-		{ 1., 1., 1. } };
+		{0., 0., 0.},
+		{0., 0., 1.},
+		{0., 1., 0.},
+		{0., 1., 1.},
+		{1., 0., 0.},
+		{1., 0., 1.},
+		{1., 1., 0.},
+		{1., 1., 1.}};
 //@
-	CodePrinter::WFE( );
+	CodePrinter::WFE();
 
-	codeprinter.print( "now remember pattern 3" );
+	codeprinter.print("now remember pattern 3");
 //@now remember pattern 3
 	// let's try a first pattern
-	std::size_t
+	UI
 	pattern = 3;
 
 	// send teacher vector 3 to neurons in first layer
-	neuron[ 0 ] = teacherIn[ pattern ];
+	neuron[0] = teacherIn[pattern];
 
 	// add a 9th bias neuron
-	addBias( neuron[ 0 ] );
-	print( "neuron[ 0 ]", neuron[ 0 ] );
+	addBias(neuron[0]);
+	print("neuron[0]", neuron[0]);
 
 	// multiply weights of input layer with neurons of input layer to get net sums for input layer
-	net[ 0 ] = weights[ 0 ] | neuron[ 0 ];
-	print( "net[ 0 ]", net[ 0 ] );
+	net[0] = weights[0] | neuron[0];
+	print("net[0]", net[0]);
 
 	// transform net sum to activation of neurons in hidden layer
-	neuron[ 1 ] = trnsfrm( net[ 0 ], act_0p1 );
+	neuron[1] = trnsfrm(net[0], act_0p1);
 
 	// again add an additional bias neuron to hidden layer
-	addBias( neuron[ 1 ] );
-	print( "neuron[ 1 ]", neuron[ 1 ] );
+	addBias(neuron[1]);
+	print("neuron[1]", neuron[1]);
 
 	// multiply weights of hidden layer with neurons of hidden layer to get net sums for hidden layer
-	net[ 1 ] = weights[ 1 ] | neuron[ 1 ];
-	print( "net[ 1 ]", net[ 1 ] );
+	net[1] = weights[1] | neuron[1];
+	print("net[1]", net[1]);
 
 	// transform net sum to activation of neurons in output layer
-	neuron[ 2 ] = trnsfrm( net[ 1 ], act_0p1 );
-	print( "neuron[ 2 ]", neuron[ 2 ] );
+	neuron[2] = trnsfrm(net[1], act_0p1);
+	print("neuron[2]", neuron[2]);
 //@
-	CodePrinter::WFE( );
+	CodePrinter::WFE();
 
-	codeprinter.print( "teach pattern 3 / get deltas" );
+	codeprinter.print("teach pattern 3 / get deltas");
 //@teach pattern 3 / get deltas
 	// how good was it?
 	VD
-	err = neuron[ 2 ] - teacherOut[ pattern ];
+	err = neuron[2] - teacherOut[pattern];
 
-	print( "err", err );
+	print("err", err);
 
-	// calc derivative of activation of output neurons
+	// calc derivative of activation of output neurons without bias neuron
 	VD
-	diffAct = trnsfrm( neuron[ 2 ], diffAct_0p1 );
-	print( "diffAct", diffAct );
+	diffAct = trnsfrm(neuron[2], diffAct_0p1);
+	print("diffAct", diffAct);
 
 	// errors of hidden layer
-	delta[ 1 ] = diffAct * err;
-	print( "delta[ 1 ]", delta[ 1 ] );
+	delta[1] = diffAct * err;
+	print("delta[1]", delta[1]);
 
 	// calculate changes in weights as product of error vector of hidden layer with weights of hidden layer
 	VD
-	dw = delta[ 1 ] | weights[ 1 ];
-	print( "dw", dw );
+	dw = delta[1] | weights[1];
+	print("dw", dw);
 
 	// calc derivative of activation of hidden neurons
-	diffAct = trnsfrm( neuron[ 1 ], diffAct_0p1 );
-	print( "diffAct", diffAct );
+	diffAct = trnsfrm(neuron[1], diffAct_0p1);
+	print("diffAct", diffAct);
 
 	// errors of input layer
-	delta[ 0 ] = diffAct * dw;
-	print( "delta[ 0 ]", delta[ 0 ] );
+	delta[0] = diffAct * dw;
+	print("delta[0]", delta[0]);
 //@
-	CodePrinter::WFE( );
+	CodePrinter::WFE();
 
-	codeprinter.print( "teach pattern 3 / change weights" );
+	codeprinter.print("teach pattern 3 / change weights");
 //@teach pattern 3 / change weights
 	// teaching rate is set to .5
-	double
+	D
 	eta = .5;
 
 	// now the net should learn what it does wrong in pattern 3
 	// calc the change in weights for hidden layer as outer product of errors and outputs in hidden layer
 	MD
-	dW = delta[ 1 ] ^ neuron[ 1 ];
+	dW = delta[1] ^ neuron[1];
 
 	// adjust weights with our half of our teaching rate .5 in hidden layer
-	weights[ 1 ] -= .5 * eta * dW;
+	weights[1] -= .5 * eta * dW;
 
-	print( "delta[ 1 ]", delta[ 1 ] );
-	print( "neuron[ 1 ]", neuron[ 1 ] );
-	print( "dW", dW );
-	print( "weights[ 1 ]", weights[ 1 ] );
+	print("delta[1]", delta[1]);
+	print("neuron[1]", neuron[1]);
+	print("dW", dW);
+	print("weights[1]", weights[1]);
 
 	// calc the change in weights for input layer as outer product of errors and outputs in input layer
-	dW = delta[ 0 ] ^ neuron[ 0 ];
+	dW = delta[0] ^ neuron[0];
 
 	// adjust weights with our teaching rate .5 in input layer
-	weights[ 0 ] -= eta * dW;
+	weights[0] -= eta * dW;
 
-	print( "delta[ 0 ]", delta[ 0 ] );
-	print( "neuron[ 0 ]", neuron[ 0 ] );
-	print( "dW", dW );
-	print( "weights[ 0 ]", weights[ 0 ] );
+	print("delta[0]", delta[0]);
+	print("neuron[0]", neuron[0]);
+	print("dW", dW);
+	print("weights[0]", weights[0]);
 //@
-	CodePrinter::WFE( );
+	CodePrinter::WFE();
 
-	codeprinter.print( "remember pattern 3 again" );
+	codeprinter.print("remember pattern 3 again");
 //@remember pattern 3 again
-	neuron[ 0 ] = teacherIn[ pattern ];
-	addBias( neuron[ 0 ] );
-	print( "neuron[ 0 ]", neuron[ 0 ] );
+	neuron[0] = teacherIn[pattern];
+	addBias(neuron[0]);
+	print("neuron[0]", neuron[0]);
 
-	net[ 0 ] = weights[ 0 ] | neuron[ 0 ];
-	print( "net[ 0 ]", net[ 0 ] );
+	net[0] = weights[0] | neuron[0];
+	print("net[0]", net[0]);
 
-	neuron[ 1 ] = trnsfrm( net[ 0 ], act_0p1 );
-	addBias( neuron[ 1 ] );
-	print( "neuron[ 1 ]", neuron[ 1 ] );
+	neuron[1] = trnsfrm(net[0], act_0p1);
+	addBias(neuron[1]);
+	print("neuron[1]", neuron[1]);
 
-	net[ 1 ] = weights[ 1 ] | neuron[ 1 ];
-	print( "net[ 1 ]", net[ 1 ] );
+	net[1] = weights[1] | neuron[1];
+	print("net[1]", net[1]);
 
-	neuron[ 2 ] = trnsfrm( net[ 1 ], act_0p1 );
-	print( "neuron[ 2 ]", neuron[ 2 ] );
+	neuron[2] = trnsfrm(net[1], act_0p1);
+	print("neuron[2]", neuron[2]);
 
 	VD
-	errNow = neuron[ 2 ] - teacherOut[ pattern ];
+	errNow = neuron[2] - teacherOut[pattern];
 
-	print( "error before:           ", round( err, 4 ) );
-	print( "error now:              ", round( errNow, 4 ) );
-	print( "improvememt in percent: ", 100. * round( ( err - errNow ) / errNow, 4 ) );
+	print("error before:           ", round(err, 4));
+	print("error now:              ", round(errNow, 4));
+	print("improvememt in percent: ", 100. * round((err - errNow) / errNow, 4));
 //@
-	CodePrinter::WFE( );
+	CodePrinter::WFE();
 
-	codeprinter.print( "now 10000 loops" );
+	codeprinter.print("now 10000 loops");
 //@now 10000 loops
-	for( std::size_t loop = 1; loop <= 10000; ++ loop ) {
+	for(UI loop = 1; loop <= 10000; ++ loop) {
 
-		pattern = rand( ) & 0x7;
+		pattern = rand() & 0x7;
 
-		neuron[ 0 ] = teacherIn[ pattern ];
-		addBias( neuron[ 0 ] );
+		neuron[0] = teacherIn[pattern];
+		addBias(neuron[0]);
 
-		net[ 0 ] = weights[ 0 ] | neuron[ 0 ];
+		net[0] = weights[0] | neuron[0];
 
-		neuron[ 1 ] = trnsfrm( net[ 0 ], act_0p1 );
-		addBias( neuron[ 1 ] );
+		neuron[1] = trnsfrm(net[0], act_0p1);
+		addBias(neuron[1]);
 
-		net[ 1 ] = weights[ 1 ] | neuron[ 1 ];
-		neuron[ 2 ] = trnsfrm( net[ 1 ], act_0p1 );
+		net[1] = weights[1] | neuron[1];
+		neuron[2] = trnsfrm(net[1], act_0p1);
 
-		dw = neuron[ 2 ] - teacherOut[ pattern ];
+		dw = neuron[2] - teacherOut[pattern];
 
-		if( ( loop == 1 ) || ( loop == 10 ) || ( loop == 1e2 ) || ( loop == 1e3 ) || ( loop == 1e4 ) || ( loop == 1e5 ) ) {
+		if((loop == 1) || (loop == 10) || (loop == 1e2) || (loop == 1e3) || (loop == 1e4) || (loop == 1e5)) {
 
-			print( "loop", loop );
-			print( "sse:", dw | dw );
+			print("loop", loop);
+			print("sse:", dw | dw);
 		}
 
-		diffAct = trnsfrm( neuron[ 2 ], diffAct_0p1 );
-		delta[ 1 ] = diffAct * dw;
+		diffAct = trnsfrm(neuron[2], diffAct_0p1);
+		delta[1] = diffAct * dw;
 
-		dw = delta[ 1 ] | weights[ 1 ];
-		diffAct = trnsfrm( neuron[ 1 ], diffAct_0p1 );
-		delta[ 0 ] = diffAct * dw;
+		dw = delta[1] | weights[1];
+		diffAct = trnsfrm(neuron[1], diffAct_0p1);
+		delta[0] = diffAct * dw;
 
-		dW = delta[ 1 ] ^ neuron[ 1 ];
-		weights[ 1 ] -= .5 * eta * dW;
+		dW = delta[1] ^ neuron[1];
+		weights[1] -= .5 * eta * dW;
 
-		dW = delta[ 0 ] ^ neuron[ 0 ];
-		weights[ 0 ] -= eta * dW;
+		dW = delta[0] ^ neuron[0];
+		weights[0] -= eta * dW;
 	}
 
-	for( pattern = 0; pattern < 8; ++ pattern ) {
+	for(pattern = 0; pattern < 8; ++ pattern) {
 
-		neuron[ 0 ] = teacherIn[ pattern ];
-		addBias( neuron[ 0 ] );
+		neuron[0] = teacherIn[pattern];
+		addBias(neuron[0]);
 
-		net[ 0 ] = weights[ 0 ] | neuron[ 0 ];
+		net[0] = weights[0] | neuron[0];
 
-		neuron[ 1 ] = trnsfrm( net[ 0 ], act_0p1 );
-		addBias( neuron[ 1 ] );
+		neuron[1] = trnsfrm(net[0], act_0p1);
+		addBias(neuron[1]);
 
-		net[ 1 ] = weights[ 1 ] | neuron[ 1 ];
-		neuron[ 2 ] = trnsfrm( net[ 1 ], act_0p1 );
+		net[1] = weights[1] | neuron[1];
+		neuron[2] = trnsfrm(net[1], act_0p1);
 
-		print( "-------------------------------------------" );
-		print( "in", sub( round( neuron[ 0 ], 2 ), 0, neuron[ 0 ].size( ) - 1 ) );
-		print( "out", round( neuron[ 2 ], 2 ) );
+		print("-------------------------------------------");
+		print("in", sub(round(neuron[0], 2), 0, neuron[0].size() - 1));
+		print("out", round(neuron[2], 2));
 	}
 //@
-	CodePrinter::WFE( );
+	CodePrinter::WFE();
 
-	codeprinter.print( "save the weights" );
+	codeprinter.print("save the weights");
 //@save the weights
-	save( "weights", weights );
+	save("weights", weights);
 //@
-	CodePrinter::WFE( );
+	CodePrinter::WFE();
 
-	codeprinter.print( "load weights again" );
+	codeprinter.print("load weights again");
 //@load weights again
 	VD
 	wv;
 
-	load( "weights", wv );
+	load("weights", wv);
 
-	print( "first vector", wv );
+	print("first vector", wv);
 
 	MD
 	wm;
 
-	load( "weights", wm );
+	load("weights", wm);
 
-	print( "first matrix", wm );
+	print("first matrix", wm);
 
-	load( "weights", weights );
+	load("weights", weights);
 
-	print( "complete weights tensor", weights );
+	print("complete weights tensor", weights);
 
-	for( pattern = 0; pattern < 8; ++ pattern ) {
+	for(pattern = 0; pattern < 8; ++ pattern) {
 
-		neuron[ 0 ] = teacherIn[ pattern ];
-		addBias( neuron[ 0 ] );
+		neuron[0] = teacherIn[pattern];
+		addBias(neuron[0]);
 
-		net[ 0 ] = weights[ 0 ] | neuron[ 0 ];
+		net[0] = weights[0] | neuron[0];
 
-		neuron[ 1 ] = trnsfrm( net[ 0 ], act_0p1 );
-		addBias( neuron[ 1 ] );
+		neuron[1] = trnsfrm(net[0], act_0p1);
+		addBias(neuron[1]);
 
-		net[ 1 ] = weights[ 1 ] | neuron[ 1 ];
-		neuron[ 2 ] = trnsfrm( net[ 1 ], act_0p1 );
+		net[1] = weights[1] | neuron[1];
+		neuron[2] = trnsfrm(net[1], act_0p1);
 
-		print( "-------------------------------------------" );
-		print( "in", sub( neuron[ 0 ], 0, neuron[ 0 ].size( ) - 1 ) );
-		print( "out", round( neuron[ 2 ], 2 ) );
+		print("-------------------------------------------");
+		print("in", sub(neuron[0], 0, neuron[0].size() - 1));
+		print("out", round(neuron[2], 2));
 	}
 //@
-	CodePrinter::WFE( );
+	CodePrinter::WFE();
 
-	codeprinter.print( "XOR { 0, 1 } -> { 0, 1 }" );
-//@XOR { 0, 1 } -> { 0, 1 }
+	codeprinter.print("XOR {0, 1} -> {0, 1}");
+//@XOR {0, 1} -> {0, 1}
 
 	MD
 
-	o( 3 ),
-	n( 2 ),
-	d( 2 ),
+	o(3),
+	n(2),
+	d(2),
 
 	xorIn = {
-		{ 0., 0. },
-		{ 0., 1. },
-		{ 1., 0. },
-		{ 1., 1. } },
+		{0., 0.},
+		{0., 1.},
+		{1., 0.},
+		{1., 1.}},
 
 	xorOut = {
-		{ 0. },
-		{ 1. },
-		{ 1. },
-		{ 0. } };
+		{0.},
+		{1.},
+		{1.},
+		{0.}};
+
+	srand(2);
 
 	TD
 	xorW = {
 
-		2. * mrnd< double >( 2, 3 ) - 1.,
-		2. * mrnd< double >( 1, 3 ) - 1.
+		2. * mrnd< D >(2, 3) - 1.,
+		2. * mrnd< D >(1, 3) - 1.
 	};
 
-	for( std::size_t loop = 1; loop <= 100000; ++ loop ) {
+	for(UI loop = 1; loop <= 100000; ++ loop) {
 
-		std::size_t
-		pattern = rand( ) & 0x3;
+		UI
+		pattern = rand() & 0x3;
 
-		o[ 0 ] = xorIn[ pattern ];
-		addBias( o[ 0 ] );
+		o[0] = xorIn[pattern];
+		addBias(o[0]);
 
-		n[ 0 ] = xorW[ 0 ] | o[ 0 ];
-		o[ 1 ] = trnsfrm( n[ 0 ], act_0p1 );
-		addBias( o[ 1 ] );
+		n[0] = xorW[0] | o[0];
+		o[1] = trnsfrm(n[0], act_0p1);
+		addBias(o[1]);
 
-		n[ 1 ] = xorW[ 1 ] | o[ 1 ];
-		o[ 2 ] = trnsfrm( n[ 1 ], act_0p1 );
+		n[1] = xorW[1] | o[1];
+		o[2] = trnsfrm(n[1], act_0p1);
 
-		VD
-		dw = o[ 2 ] - xorOut[ pattern ];
+		dw = o[2] - xorOut[pattern];
 
-		if( ( loop == 1 ) || ( loop == 10 ) || ( loop == 1e2 ) || ( loop == 1e3 ) || ( loop == 1e4 ) || ( loop == 1e5 ) || ( loop == 1e6 ) ) {
+		if((loop == 1) || (loop == 10) || (loop == 1e2) || (loop == 1e3) || (loop == 1e4) || (loop == 1e5) || (loop == 1e6)) {
 
-			print( "loop", loop );
-			print( "sse:", dw | dw );
+			print("loop", loop);
+			print("sse:", dw | dw);
 		}
 
-		diffAct = trnsfrm( o[ 2 ], diffAct_0p1 );
-		d[ 1 ] = diffAct * dw;
+		diffAct = trnsfrm(o[2], diffAct_0p1);
+		d[1] = diffAct * dw;
 
-		dw = d[ 1 ] | xorW[ 1 ];
-		diffAct = trnsfrm( o[ 1 ], diffAct_0p1 );
-		d[ 0 ] = diffAct * dw;
+		dw = d[1] | xorW[1];
+		diffAct = trnsfrm(o[1], diffAct_0p1);
+		d[0] = diffAct * dw;
 
-		dW = d[ 1 ] ^ o[ 1 ];
-		xorW[ 1 ] -= .5 * eta * dW;
+		dW = d[1] ^ o[1];
+		dW.pop_back();
+		xorW[1] -= .5 * eta * dW;
 
-		dW = d[ 0 ] ^ o[ 0 ];
-		xorW[ 0 ] -= eta * dW;
+		dW = d[0] ^ o[0];
+		xorW[0] -= eta * dW;
 	}
 
-	for( pattern = 0; pattern < 4; ++ pattern ) {
+	for(pattern = 0; pattern < 4; ++ pattern) {
 
-		o[ 0 ] = xorIn[ pattern ];
-		addBias( o[ 0 ] );
+		o[0] = xorIn[pattern];
+		addBias(o[0]);
 
-		n[ 0 ] = xorW[ 0 ] | o[ 0 ];
+		n[0] = xorW[0] | o[0];
 
-		o[ 1 ] = trnsfrm( n[ 0 ], act_0p1 );
-		addBias( o[ 1 ] );
+		o[1] = trnsfrm(n[0], act_0p1);
+		addBias(o[1]);
 
-		n[ 1 ] = xorW[ 1 ] | o[ 1 ];
-		o[ 2 ] = trnsfrm( n[ 1 ], act_0p1 );
+		n[1] = xorW[1] | o[1];
+		o[2] = trnsfrm(n[1], act_0p1);
 
-		print( "-------------------------------------------" );
-		print( "in", sub( o[ 0 ], 0, o[ 0 ].size( ) - 1 ) );
-		print( "out", round( o[ 2 ], 2 ) );
+		print("-------------------------------------------");
+		print("in", sub(o[0], 0, o[0].size() - 1));
+		print("out", round(o[2], 2));
 	}
 //@
-	CodePrinter::WFE( );
+	CodePrinter::WFE();
 
-	codeprinter.print( "XOR { -1, +1 } > { -1, +1 }" );
-//@XOR { -1, +1 } > { -1, +1 }
+	codeprinter.print("XOR {-1, +1} > {-1, +1}");
+//@XOR {-1, +1} > {-1, +1}
 
 	xorIn = {
-		{ -1., -1. },
-		{ -1., +1. },
-		{ +1., -1. },
-		{ +1., +1. } };
+		{-1., -1.},
+		{-1., +1.},
+		{+1., -1.},
+		{+1., +1.}};
 
 	xorOut = {
-		{ -1. },
-		{ +1. },
-		{ +1. },
-		{ -1. } };
+		{-1.},
+		{+1.},
+		{+1.},
+		{-1.}};
 
 	xorW = {
 
-		2. * mrnd< double >( 2, 3 ) - 1.,
-		2. * mrnd< double >( 1, 3 ) - 1.
+		2. * mrnd< D >(2, 3) - 1.,
+		2. * mrnd< D >(1, 3) - 1.
 	};
 
-	for( std::size_t loop = 1; loop <= 100000; ++ loop ) {
+	for(UI loop = 1; loop <= 100000; ++ loop) {
 
-		std::size_t
-		pattern = rand( ) & 0x3;
+		UI
+		pattern = rand() & 0x3;
 
-		o[ 0 ] = xorIn[ pattern ];
-		addBias( o[ 0 ] );
+		o[0] = xorIn[pattern];
+		addBias(o[0]);
 
-		n[ 0 ] = xorW[ 0 ] | o[ 0 ];
+		n[0] = xorW[0] | o[0];
 
 		// note: now activation function is act_m1p1 not act_0m1 as before
-		o[ 1 ] = trnsfrm( n[ 0 ], act_m1p1 );
-		addBias( o[ 1 ] );
+		o[1] = trnsfrm(n[0], act_m1p1);
+		addBias(o[1]);
 
-		n[ 1 ] = xorW[ 1 ] | o[ 1 ];
-		o[ 2 ] = trnsfrm( n[ 1 ], act_m1p1 );
+		n[1] = xorW[1] | o[1];
+		o[2] = trnsfrm(n[1], act_m1p1);
 
 		VD
-		dw = o[ 2 ] - xorOut[ pattern ];
+		dw = o[2] - xorOut[pattern];
 
-		if( ( loop == 1 ) || ( loop == 10 ) || ( loop == 1e2 ) || ( loop == 1e3 ) || ( loop == 1e4 ) || ( loop == 1e5 ) || ( loop == 1e6 ) ) {
+		if((loop == 1) || (loop == 10) || (loop == 1e2) || (loop == 1e3) || (loop == 1e4) || (loop == 1e5) || (loop == 1e6)) {
 
-			print( "loop", loop );
-			print( "sse:", dw | dw );
+			print("loop", loop);
+			print("sse:", dw | dw);
 		}
 
-		diffAct = trnsfrm( o[ 2 ], diffAct_m1p1 );
-		d[ 1 ] = diffAct * dw;
+		diffAct = trnsfrm(o[2], diffAct_m1p1);
+		d[1] = diffAct * dw;
 
-		dw = d[ 1 ] | xorW[ 1 ];
-		diffAct = trnsfrm( o[ 1 ], diffAct_m1p1 );
-		d[ 0 ] = diffAct * dw;
+		dw = d[1] | xorW[1];
+		diffAct = trnsfrm(o[1], diffAct_m1p1);
+		d[0] = diffAct * dw;
 
-		dW = d[ 1 ] ^ o[ 1 ];
-		xorW[ 1 ] -= .5 * eta * dW;
+		dW = d[1] ^ o[1];
+		xorW[1] -= .5 * eta * dW;
 
-		dW = d[ 0 ] ^ o[ 0 ];
-		xorW[ 0 ] -= eta * dW;
+		dW = d[0] ^ o[0];
+		xorW[0] -= eta * dW;
 	}
 
-	for( pattern = 0; pattern < 4; ++ pattern ) {
+	for(pattern = 0; pattern < 4; ++ pattern) {
 
-		o[ 0 ] = xorIn[ pattern ];
-		addBias( o[ 0 ] );
+		o[0] = xorIn[pattern];
+		addBias(o[0]);
 
-		n[ 0 ] = xorW[ 0 ] | o[ 0 ];
+		n[0] = xorW[0] | o[0];
 
-		o[ 1 ] = trnsfrm( n[ 0 ], act_m1p1 );
-		addBias( o[ 1 ] );
+		o[1] = trnsfrm(n[0], act_m1p1);
+		addBias(o[1]);
 
-		n[ 1 ] = xorW[ 1 ] | o[ 1 ];
-		o[ 2 ] = trnsfrm( n[ 1 ], act_m1p1 );
+		n[1] = xorW[1] | o[1];
+		o[2] = trnsfrm(n[1], act_m1p1);
 
-		print( "-------------------------------------------" );
-		print( "in", sub( o[ 0 ], 0, o[ 0 ].size( ) - 1 ) );
-		print( "out", round( o[ 2 ], 2 ) );
+		print("-------------------------------------------");
+		print("in", sub(o[0], 0, o[0].size() - 1));
+		print("out", round(o[2], 2));
 	}
 //@
-	CodePrinter::WFE( );
+	CodePrinter::WFE();
 
-	codeprinter.print( "once again but shorter by using some vectors on stack" );
+	codeprinter.print("once again but shorter by using some vectors on stack");
 //@once again but shorter by using some vectors on stack
 
 	xorW = {
 
-		2. * mrnd< double >( 2, 3 ) - 1.,
-		2. * mrnd< double >( 1, 3 ) - 1.
+		2. * mrnd< D >(2, 3) - 1.,
+		2. * mrnd< D >(1, 3) - 1.
 	};
 
-	for( std::size_t loop = 1; loop <= 100000; ++ loop ) {
+	for(UI loop = 1; loop <= 100000; ++ loop) {
 
-		std::size_t
-		pattern = rand( ) & 0x3;
+		UI
+		pattern = rand() & 0x3;
 
-		addBias( o[ 0 ] = xorIn[ pattern ] );
-		addBias( o[ 1 ] = trnsfrm( xorW[ 0 ] | o[ 0 ], act_m1p1 ) );
-				 o[ 2 ] = trnsfrm( xorW[ 1 ] | o[ 1 ], act_m1p1 );
+		addBias(o[0] = xorIn[pattern]);
+		addBias(o[1] = trnsfrm(xorW[0] | o[0], act_m1p1));
+				 o[2] = trnsfrm(xorW[1] | o[1], act_m1p1);
 
-		d[ 1 ] = trnsfrm( o[ 2 ], diffAct_m1p1 ) * ( o[ 2 ] - xorOut[ pattern ] );
-		d[ 0 ] = trnsfrm( o[ 1 ], diffAct_m1p1 ) * ( d[ 1 ] | xorW[ 1 ] );
+		d[1] = trnsfrm(o[2], diffAct_m1p1) * (o[2] - xorOut[pattern]);
+		d[0] = trnsfrm(o[1], diffAct_m1p1) * (d[1] | xorW[1]);
 
-		xorW[ 1 ] -= .5 * eta * ( d[ 1 ] ^ o[ 1 ] );
-		xorW[ 0 ] -=      eta * ( d[ 0 ] ^ o[ 0 ] );
+		xorW[1] -= .5 * eta * (d[1] ^ o[1]);
+		xorW[0] -=      eta * (d[0] ^ o[0]);
 	}
 
-	for( pattern = 0; pattern < 4; ++ pattern ) {
+	for(pattern = 0; pattern < 4; ++ pattern) {
 
-		o[ 0 ] = xorIn[ pattern ];
+		o[0] = xorIn[pattern];
 
-		for( std::size_t i = 0; i < 2; ++ i ) {
+		for(UI i = 0; i < 2; ++ i) {
 
-			addBias( o[ i ] );
+			addBias(o[i]);
 
-			o[ i + 1 ] = trnsfrm( xorW[ i ] | o[ i ], act_m1p1 );
+			o[i + 1] = trnsfrm(xorW[i] | o[i], act_m1p1);
 		}
 
-		print( "-------------------------------------------" );
-		print( "in", sub( o[ 0 ], 0, o[ 0 ].size( ) - 1 ) );
-		print( "out", round( o[ 2 ], 4 ) );
+		print("-------------------------------------------");
+		print("in", sub(o[0], 0, o[0].size() - 1));
+		print("out", round(o[2], 4));
 	}
 //@
-	CodePrinter::WFE( );
+	CodePrinter::WFE();
 
-	codeprinter.print( "Aaaa" );
+	codeprinter.print("Aaaa");
 //@Aaaa
 	// finally a really brief example of a dreaming net
 	// task for the next brain is to remember the letter "A"
@@ -1134,143 +1002,152 @@ main( ) {
 	teacherIn = {
 	//              minds
 	//    | conscious | subconscious |
-		{ 0, 0, 0, 0, 0,    0, 0 },
-		{ 0, 0, 1, 0, 0,    0, 0 },
-		{ 0, 1, 0, 1, 0,    0, 0 },
-		{ 1, 0, 0, 0, 1,    0, 0 },
-		{ 1, 1, 1, 1, 1,    0, 0 },
-		{ 1, 0, 0, 0, 1,    0, 1 },
-		{ 1, 0, 0, 0, 1,    1, 0 },
-		{ 1, 0, 0, 0, 1,    1, 1 } };
+		{0, 0, 0, 0, 0,    0, 0},
+		{0, 0, 1, 0, 0,    0, 0},
+		{0, 1, 0, 1, 0,    0, 0},
+		{1, 0, 0, 0, 1,    0, 0},
+		{1, 1, 1, 1, 1,    0, 0},
+		{1, 0, 0, 0, 1,    0, 1},
+		{1, 0, 0, 0, 1,    1, 0},
+		{1, 0, 0, 0, 1,    1, 1}};
 
 	// remember simply what has to come next
 	teacherOut = {
-		teacherIn[ 1 ],
-		teacherIn[ 2 ],
-		teacherIn[ 3 ],
-		teacherIn[ 4 ],
-		teacherIn[ 5 ],
-		teacherIn[ 6 ],
-		teacherIn[ 7 ],
-		teacherIn[ 0 ] };
+		teacherIn[1],
+		teacherIn[2],
+		teacherIn[3],
+		teacherIn[4],
+		teacherIn[5],
+		teacherIn[6],
+		teacherIn[7],
+		teacherIn[0]};
 
 	// we need again 2 matrices of weights
 	TD
-	brain( 2 );
+	brain(2);
 
 	// every maps 7+1 neurons to 8
-	for( std::size_t i = 0; i < count( brain ); ++ i ) {
+	for(UI i = 0; i < len(brain); ++ i) {
 
-		brain[ i ] = 2. * mrnd< double >( 7, 8 ) - 1.;
+		brain[i] = 2. * mrnd< D >(7, 8) - 1.;
 	}
 
 	// learn 100000 sets
-	for( std::size_t loop = 1; loop <= 100000; ++ loop ) {
+	for(UI loop = 1; loop <= 100000; ++ loop) {
 
-		std::size_t
-		pattern = static_cast< std::size_t >( rand( ) ) % teacherIn.size( );
+		UI
+		pattern = static_cast< UI >(rand()) % teacherIn.size();
 
-		addBias( o[ 0 ] = teacherIn[ pattern ] );
-		addBias( o[ 1 ] = trnsfrm( brain[ 0 ] | o[ 0 ], act_0p1 ) );
-		o[ 2 ] = trnsfrm( brain[ 1 ] | o[ 1 ], act_0p1 );
+		addBias(o[0] = teacherIn[pattern]);
+		addBias(o[1] = trnsfrm(brain[0] | o[0], act_0p1));
+		o[2] = trnsfrm(brain[1] | o[1], act_0p1);
 
 		VD
-		dw = o[ 2 ] - teacherOut[ pattern ];
+		dw = o[2] - teacherOut[pattern];
 
-		if( ( loop == 1 ) || ( loop == 10 ) || ( loop == 1e2 ) || ( loop == 1e3 ) || ( loop == 1e4 ) || ( loop == 1e5 ) || ( loop == 1e6 ) ) {
+		if((loop == 1) || (loop == 10) || (loop == 1e2) || (loop == 1e3) || (loop == 1e4) || (loop == 1e5) || (loop == 1e6)) {
 
-			print( "loop", loop );
-			print( "sse:", dw | dw );
+			print("loop", loop);
+			print("sse:", dw | dw);
 		}
 
-		d[ 1 ] = trnsfrm( o[ 2 ], diffAct_0p1 ) * dw;
-		d[ 0 ] = trnsfrm( o[ 1 ], diffAct_0p1 ) * ( d[ 1 ] | brain[ 1 ] );
+		d[1] = trnsfrm(o[2], diffAct_0p1) * dw;
+		d[0] = trnsfrm(o[1], diffAct_0p1) * (d[1] | brain[1]);
 
-		brain[ 1 ] -= .5 * eta * ( d[ 1 ] ^ o[ 1 ] );
-		brain[ 0 ] -=      eta * ( d[ 0 ] ^ o[ 0 ] );
+		brain[1] -= .5 * eta * (d[1] ^ o[1]);
+		brain[0] -=      eta * (d[0] ^ o[0]);
 	}
 	// now the brain hopefully knows the letter A
 
 	// this is everything that's needed for remembering a pattern
-	#define REM for( std::size_t i = 0; i < count( brain ); ++ i ) { addBias( o[ i ] ); o[ i + 1 ] = trnsfrm( brain[ i ] | o[ i ], act_0p1 ); }
+	#define REM for(UI i = 0; i < len(brain); ++ i) {addBias(o[i]); o[i + 1] = trnsfrm(brain[i] | o[i], act_0p1);}
 
 	// show our brain an empty vector and hope it will remember the letter A
-	o[ 0 ] = { 0, 0, 0, 0, 0, 0, 0 };
+	o[0] = {0, 0, 0, 0, 0, 0, 0};
 
 	// now remember some memories
 	std::cout << "Aaaa!:" << std::endl;
 
-	for( std::size_t i = 0; i < 4 * teacherIn.size( ); ++ i ) {
+	for(UI i = 0; i < 4 * teacherIn.size(); ++ i) {
 
 		REM
 
-		for( std::size_t j = 0; j < 5; ++ j ) {
+		for(UI j = 0; j < 5; ++ j) {
 
-			std::cout << ( o[ 2 ][ j ] < .5 ? ' ' : 'A' );
+			std::cout << (o[2][j] < .5 ? ' ' : 'A');
 		}
 
 		std::cout << std::endl;
 
 		//brain, think what you've remembered!
-		o[ 0 ] = o[ 2 ];
+		o[0] = o[2];
 	}
 //@
-	CodePrinter::WFE( );
+	CodePrinter::WFE();
+*/
 
-	codeprinter.print( "Time to put all we know in a class" );
+
+	codeprinter.print("Time to put all we know in a class");
 //@Time to put all we know in a class
 	// make a class mlp
 	// use it
 //@
-	CodePrinter::WFE( );
+	CodePrinter::WFE();
 
-	codeprinter.print( "Class Multilayer Perceptron" );
+	codeprinter_mlp.print("Class Multilayer Perceptron");
 
-	CodePrinter::WFE( );
+	CodePrinter::WFE();
 
-	codeprinter.print( "prepare new task: multiply two 3 bit numbers" );
-//@prepare new task: multiply 3 bits by 3 bits
+	codeprinter.print("prepare new task: multiply two 3 bit numbers");
+//@prepare new task: multiply two 3 bit numbers
+
 	MD
-	x_y = mcnst< double >( 64, 6 ),        // 64 x ( 3 + 3 ) bits: y = y2 y1 y0   x = x2 x1 x0
-	x_times_y = mcnst< double >( 64, 6 );  // 64 x 6 bits as result of x * y
+	x_y = mcnst< D >(64, 6),        // 64 x (3 + 3) bits: y = y2 y1 y0   x = x2 x1 x0
+	x_times_y = mcnst< D >(64, 6);  // 64 x 6 bits as result of x * y
 
-	for ( std::size_t y = 0; y < 8; ++ y ) {
+	for (UI y = 0; y < 8; ++ y) {
 
-		for ( std::size_t x = 0; x < 8; ++ x ) {
+		for (UI x = 0; x < 8; ++ x) {
 
-			std::size_t
-			j = ( y << 3 ) + x;
+			UI
+			j = (y << 3) + x;
 
-			for ( std::size_t i = 0; i < 6; ++ i ) {
+			for (UI i = 0; i < 6; ++ i) {
 
-				x_y      [ j ][ 5 - i ] = ( j         & ( 1ul << i ) ) == ( 1ul << i );
-				x_times_y[ j ][ 5 - i ] = ( ( y * x ) & ( 1ul << i ) ) == ( 1ul << i );
+				x_y      [j][5 - i] = (j         & (1ul << i)) == (1ul << i);
+				x_times_y[j][5 - i] = ((y * x) & (1ul << i)) == (1ul << i);
 			}
 		}
 	}
 
-	print( "x_y", ~ x_y );
-	print( "x_times_y", ~ x_times_y );
-//@
-	CodePrinter::WFE( );
+	print("x_y", ~ x_y);
+	print("x_times_y", ~ x_times_y);
+	srand(1);
 
-	codeprinter.print( "use class" );
-//@use class
 	MLP
-	mlp( { 6, 8, 8, 6 }, .8, 0., 1. );
+	mlp({6, 8, 12, 8, 6}, .1, 0., 1., -1., +1., 1);
 
-	for( std::size_t loop = 1; loop <= 1e6; ++ loop ) {
+	UI
+	loops = 450000,
+	lloop = loops / 10,
+	ll    = 0;
 
-		std::size_t
-		pId = rand( ) & 0x3f;
+	for(UI loop = 1; loop <= loops; ++ loop) {
 
-		mlp.remember( x_y[ pId ] );
-		mlp.teach( x_times_y[ pId ] );
+		UI
+		pId = rand() & 0x3f;
 
-		if( ( loop == 1 ) || ( loop == 10 ) || ( loop == 1e2 ) || ( loop == 1e3 ) || ( loop == 1e4 ) || ( loop == 1e5 ) || ( loop == 1e6 ) ) {
+		mlp.remember(x_y[pId]);
 
-			print( "loop", loop );
-			print( "sse:", mlp.rms( ) );
+		mlp.teach(x_times_y[pId]);
+
+//		if((loop == 1) || (loop == 10) || (loop == 1e2) || (loop == 1e3) || (loop == 1e4) || (loop == 1e5) || (loop == 1e6)) {
+		if(++ ll == lloop) {
+
+			ll = 0;
+
+			print("loop", loop);
+			print("sse:", mlp.rms());
 			std::cout
 				<< " --------------------------------------------- " << std::endl
 				<< "| Bits:                     0   correct 0     |" << std::endl
@@ -1282,17 +1159,17 @@ main( ) {
 				<< "| 2  1  0  |  2  1  0       5  4  3  2  1  0  |" << std::endl
 				<< " ----------+---------------------------------- " << std::endl;
 
-			for( std::size_t i = 0; i < 64; ++ i ) {
+			for(UI i = 0; i < 64; ++ i) {
 
-				mlp.remember( x_y[ i ] );
+				mlp.remember(x_y[i]);
 
 				std::cout
 					<< "| "
-					<< sub( x_y[ i ], 0, 3 )
+					<< sub(x_y[i], 0, 3)
 					<< "|  "
-					<< sub( x_y[ i ], 3, 3 )
+					<< sub(x_y[i], 3, 3)
 					<< "==>  "
-					<< round( mlp.memory( ) + 2. * x_times_y[ i ] )
+					<< round((2. * mlp.output() + x_times_y[i]))
 					<< "|"
 					<< std::endl;
 			}
@@ -1302,5 +1179,7 @@ main( ) {
 		}
 	}
 //@
+	CodePrinter::WFE();
+
 	return 0;
 }
