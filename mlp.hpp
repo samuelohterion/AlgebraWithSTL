@@ -50,7 +50,7 @@ namespace alg {
 			eta(p_eta),
 			act(p_activation_min, p_p_activation_max),
 			dact(p_activation_min, p_p_activation_max) {
-				shuffleWeights(p_weights_min, p_weights_max, p_seed);			}
+				shuffleWeights(p_weights_min, p_weights_max, p_seed);}
 			void shuffleWeights(D const & p_min = -1., D const & p_max = 1., UI const & p_seed = std::time_t(nullptr)) {
 				srand(p_seed);
 				for(UI lyr = 0; lyr < len(w); ++ lyr)
@@ -75,6 +75,8 @@ namespace alg {
 					e *= 1.;}}
 			D input(UI const & p_id) const {return i[p_id];}
 			VD input() const {return i;}
+			MD weights(UI const & p_lyr) const {return w[p_lyr];}
+			TD weights() const {return w;}
 			D output(UI const & p_id) const {return o[len(o) - 1][p_id];}
 			VD output() const {return o[len(o) - 1];}
 			D rms() const {

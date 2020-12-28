@@ -671,9 +671,11 @@ namespace alg {
 		Vec< T >
 		ret(p_size);
 
+		long double rand_max_rec = 1. / RAND_MAX;
+
 		for(auto & r : ret)
 
-			r = static_cast< long double >(random()) / RAND_MAX;
+			r = static_cast< long double >(random()) * rand_max_rec;
 
 		return ret;
 	}
