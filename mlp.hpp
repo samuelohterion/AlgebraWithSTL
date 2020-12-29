@@ -41,7 +41,7 @@ namespace alg {
 				D p_eta = .5,
 				D const &  p_activation_min = 0., D const & p_p_activation_max = 1.,
 				D const &  p_weights_min = 0.,    D const & p_weights_max = 1.,
-				UI const & p_seed = std::time_t(nullptr)) :
+				UI const & p_seed = time(nullptr)) :
 			layer_sizes(p_layer_sizes.begin(), p_layer_sizes.end()),
 			i(layer_sizes[0]),
 			o(len(layer_sizes) - 1, VD()),
@@ -51,7 +51,7 @@ namespace alg {
 			act(p_activation_min, p_p_activation_max),
 			dact(p_activation_min, p_p_activation_max) {
 				shuffleWeights(p_weights_min, p_weights_max, p_seed);}
-			void shuffleWeights(D const & p_min = -1., D const & p_max = 1., UI const & p_seed = std::time_t(nullptr)) {
+			void shuffleWeights(D const & p_min = -1., D const & p_max = 1., UI const & p_seed = time(nullptr)) {
 				srand(p_seed);
 				for(UI lyr = 0; lyr < len(w); ++ lyr)
 					w[lyr] = p_min + (p_max - p_min) * mrnd< D >(layer_sizes[lyr + 1], layer_sizes[lyr] + 1);}
