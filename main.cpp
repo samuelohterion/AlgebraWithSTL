@@ -82,6 +82,15 @@ VD
 
 	return p_vec;
 }
+
+// remove bias neuron
+VD
+& remBias(VD & p_vec) {
+
+	p_vec.pop_back();
+
+	return p_vec;
+}
 //@
 
 int
@@ -606,7 +615,7 @@ main() {
 	print("dw", dw);
 
 	// calc derivative of activation of hidden neurons
-	diffAct = trnsfrm(neuron[1], diffAct_0p1);
+	diffAct = trnsfrm(remBias(neuron[1]), diffAct_0p1);
 	print("diffAct", diffAct);
 
 	// errors of hidden layer
@@ -624,7 +633,7 @@ main() {
 	// now the net should learn what it does wrong in pattern 3
 	// calc the change in weights for hidden layer as outer product of errors in output layer and outputs in hidden layer
 	MD
-	dW = delta[1] ^ neuron[1];
+	dW = delta[1] ^ addBias(neuron[1]);
 
 	// adjust weights with our half of our teaching rate .5 in hidden layer
 	weights[1] -= .5 * eta * dW;
@@ -704,10 +713,10 @@ main() {
 		delta[1] = diffAct * dw;
 
 		dw = delta[1] | weights[1];
-		diffAct = trnsfrm(neuron[1], diffAct_0p1);
+		diffAct = trnsfrm(remBias(neuron[1]), diffAct_0p1);
 		delta[0] = diffAct * dw;
 
-		dW = delta[1] ^ neuron[1];
+		dW = delta[1] ^ addBias(neuron[1]);
 		weights[1] -= .5 * eta * dW;
 
 		dW = delta[0] ^ neuron[0];
@@ -836,10 +845,10 @@ main() {
 		d[1] = diffAct * dw;
 
 		dw = d[1] | xorW[1];
-		diffAct = trnsfrm(o[1], diffAct_0p1);
+		diffAct = trnsfrm(remBias(o[1]), diffAct_0p1);
 		d[0] = diffAct * dw;
 
-		dW = d[1] ^ o[1];
+		dW = d[1] ^ addBias(o[1]);
 		xorW[1] -= .5 * eta * dW;
 
 		dW = d[0] ^ o[0];
@@ -917,10 +926,10 @@ main() {
 		d[1] = diffAct * dw;
 
 		dw = d[1] | xorW[1];
-		diffAct = trnsfrm(o[1], diffAct_m1p1);
+		diffAct = trnsfrm(remBias(o[1]), diffAct_m1p1);
 		d[0] = diffAct * dw;
 
-		dW = d[1] ^ o[1];
+		dW = d[1] ^ addBias(o[1]);
 		xorW[1] -= .5 * eta * dW;
 
 		dW = d[0] ^ o[0];
@@ -966,9 +975,9 @@ main() {
 				 o[2] = trnsfrm(xorW[1] | o[1], act_m1p1);
 
 		d[1] = trnsfrm(o[2], diffAct_m1p1) * (o[2] - xorOut[pattern]);
-		d[0] = trnsfrm(o[1], diffAct_m1p1) * (d[1] | xorW[1]);
+		d[0] = trnsfrm(remBias(o[1]), diffAct_m1p1) * (d[1] | xorW[1]);
 
-		xorW[1] -= .5 * eta * (d[1] ^ o[1]);
+		xorW[1] -= .5 * eta * (d[1] ^ addBias(o[1]));
 		xorW[0] -=      eta * (d[0] ^ o[0]);
 	}
 
@@ -1049,9 +1058,8 @@ main() {
 		}
 
 		d[1] = trnsfrm(o[2], diffAct_0p1) * dw;
-		d[0] = trnsfrm(o[1], diffAct_0p1) * (d[1] | brain[1]);
-
-		brain[1] -= .5 * eta * (d[1] ^ o[1]);
+		d[0] = trnsfrm(remBias(o[1]), diffAct_0p1) * (d[1] | brain[1]);
+		brain[1] -= .5 * eta * (d[1] ^ addBias(o[1]));
 		brain[0] -=      eta * (d[0] ^ o[0]);
 	}
 	// now the brain hopefully knows the letter A
