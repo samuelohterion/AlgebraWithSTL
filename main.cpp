@@ -596,11 +596,11 @@ main() {
 	diffAct = trnsfrm(neuron[2], diffAct_0p1);
 	print("diffAct", diffAct);
 
-	// errors of hidden layer
+	// errors of output layer
 	delta[1] = diffAct * err;
 	print("delta[1]", delta[1]);
 
-	// calculate changes in weights as product of error vector of hidden layer with weights of hidden layer
+	// calculate changes in weights as product of error vector of output layer with weights of hidden layer
 	VD
 	dw = delta[1] | weights[1];
 	print("dw", dw);
@@ -609,7 +609,7 @@ main() {
 	diffAct = trnsfrm(neuron[1], diffAct_0p1);
 	print("diffAct", diffAct);
 
-	// errors of input layer
+	// errors of hidden layer
 	delta[0] = diffAct * dw;
 	print("delta[0]", delta[0]);
 //@
@@ -622,7 +622,7 @@ main() {
 	eta = .5;
 
 	// now the net should learn what it does wrong in pattern 3
-	// calc the change in weights for hidden layer as outer product of errors and outputs in hidden layer
+	// calc the change in weights for hidden layer as outer product of errors in output layer and outputs in hidden layer
 	MD
 	dW = delta[1] ^ neuron[1];
 
@@ -634,7 +634,7 @@ main() {
 	print("dW", dW);
 	print("weights[1]", weights[1]);
 
-	// calc the change in weights for input layer as outer product of errors and outputs in input layer
+	// calc the change in weights for input layer as outer product of errors in the hidden layer and outputs in input layer
 	dW = delta[0] ^ neuron[0];
 
 	// adjust weights with our teaching rate .5 in input layer
