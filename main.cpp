@@ -30,7 +30,7 @@ typedef Tsr< D >      TD;
 */
 //@
 
-/*
+
 //@some useful function definitions
 // just for neuro
 D
@@ -83,7 +83,6 @@ VD
 	return p_vec;
 }
 //@
-*/
 
 int
 main() {
@@ -481,7 +480,7 @@ main() {
 	CodePrinter::WFE();
 
 
-/*
+
 
 
 	codeprinter.print("now some neuro");
@@ -785,7 +784,6 @@ main() {
 //@XOR {0, 1} -> {0, 1}
 
 	MD
-
 	o(3),
 	n(2),
 	d(2),
@@ -842,7 +840,6 @@ main() {
 		d[0] = diffAct * dw;
 
 		dW = d[1] ^ o[1];
-		dW.pop_back();
 		xorW[1] -= .5 * eta * dW;
 
 		dW = d[0] ^ o[0];
@@ -1084,7 +1081,7 @@ main() {
 	}
 //@
 	CodePrinter::WFE();
-*/
+
 
 
 	codeprinter.print("Time to put all we know in a class");

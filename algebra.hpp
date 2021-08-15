@@ -1428,19 +1428,19 @@ namespace alg {
 
 	template< typename T = double >
 	bool
-	load(std::ifstream & p_ifs, Mat< T > & p_vec) {
+	load(std::ifstream & p_ifs, Mat< T > & p_mat) {
 
 		bool
 		ret = false;
 
-		p_vec.resize(0);
+		p_mat.resize(0);
 
 		Vec< T >
 		v;
 
 		while(load(p_ifs, v)) {
 
-			p_vec.push_back(v);
+			p_mat.push_back(v);
 
 			ret = true;
 		}
