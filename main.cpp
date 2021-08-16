@@ -972,7 +972,7 @@ main() {
 
 		addBias(o[0] = xorIn[pattern]);
 		addBias(o[1] = trnsfrm(xorW[0] | o[0], act_m1p1));
-				 o[2] = trnsfrm(xorW[1] | o[1], act_m1p1);
+				o[2] = trnsfrm(xorW[1] | o[1], act_m1p1);
 
 		d[1] = trnsfrm(o[2], diffAct_m1p1) * (o[2] - xorOut[pattern]);
 		d[0] = trnsfrm(remBias(o[1]), diffAct_m1p1) * (d[1] | xorW[1]);
