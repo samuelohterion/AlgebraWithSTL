@@ -131,6 +131,35 @@ main() {
 //@
 	CodePrinter::WFE();
 
+	codeprinter.print("add a value at the end of a vector");
+//@add a value at the end of a vector
+	print("push_back(u, 4.)", push_back(u, 4.));
+	print("push_front(u, -1.)", push_front(u, -1.));
+	print("pop_back(u)", pop_back(u));
+	print("+u", +u);
+	print("pop_front(u)", pop_front(u));
+	print("+u", +u);
+
+//@
+	CodePrinter::WFE();
+
+
+	codeprinter.print("add a vector at the end of a matrix");
+//@add a value at the end of a vector
+	MD
+	matrix({{1,2}, {3,5}});
+
+	print("push_back(matrix, VD({7,11))", push_back(matrix, VD({7., 11.})));
+	print("matrix = ~matrix", matrix = ~matrix);
+	print("push_front(matrix, VD({7,11, 13))", push_front(matrix, VD({7,11, 13})));
+	print("pop_back(matrix)", pop_back(matrix));
+	print("matrix", matrix);
+	print("pop_front(matrix)", pop_front(matrix));
+	print("matrix", matrix);
+
+//@
+	CodePrinter::WFE();
+
 	codeprinter.print("operator vector");
 //@operator vector
 	print("+u", +u);

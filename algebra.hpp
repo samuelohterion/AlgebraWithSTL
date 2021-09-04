@@ -1568,6 +1568,54 @@ namespace alg {
 		return ret;
 	}
 
+	template< typename T = double >
+	T pop_back(Vec< T > & p_vec) {
+
+		T v = p_vec[p_vec.size() - 1];
+
+		p_vec.pop_back();
+
+		return v;
+	}
+
+	template< typename T = double >
+	T pop_front(Vec< T > & p_vec) {
+
+		T v = p_vec[0];
+
+		for(std::size_t i = 1; i < p_vec.size(); ++ i) {
+
+			p_vec[i - 1] = p_vec[i];
+		}
+
+		p_vec.pop_back();
+
+		return v;
+	}
+
+	template< typename T = double >
+	Vec< T > push_back(Vec< T > & p_vec, T const & p_val) {
+
+		p_vec.push_back(p_val);
+
+		return p_vec;
+	}
+
+	template< typename T = double >
+	Vec< T > push_front(Vec< T > & p_vec, T const & p_val) {
+
+		p_vec.push_back(p_vec[p_vec.size()- 1]);
+
+		for(std::size_t i = p_vec.size() - 1; 0 < i; -- i) {
+
+			p_vec[i] = p_vec[i - 1];
+		}
+
+		p_vec[0] = p_val;
+
+		return p_vec;
+	}
+
 //@even more abbr.
 	typedef std::size_t UI;
 	typedef double      D;
