@@ -144,8 +144,8 @@ main() {
 	CodePrinter::WFE();
 
 
-	codeprinter.print("add a vector at the end of a matrix");
-//@add a value at the end of a vector
+	codeprinter.print("add and remove a vector before and at the end of a matrix");
+//@add and remove a vector before and at the end of a matrix
 	MD
 	matrix({{1,2}, {3,5}});
 
@@ -157,6 +157,30 @@ main() {
 	print("pop_front(matrix)", pop_front(matrix));
 	print("matrix", matrix);
 
+//@
+	CodePrinter::WFE();
+
+	codeprinter.print("insert a vector into a matrix");
+//@insert a vector into a matrix
+	print("u", u);
+	print("insert_val(u, 0, -1.)", insert_val(u, 0, -1.));
+	print("insert_val(u, 4, 4.)", insert_val(u, 4, 4.));
+	print("insert_vec(u, 0, {-4., -3., -1.})", insert_vec(u, 0, {-4., -3., -2.}));
+	print("insert_vec(u, 4, {4., 5., 6.})", insert_vec(u, 4, {4., 5., 6.}));
+	print("insert_val(u, 1, .5)", insert_val(u, 1, .5));
+	print("insert_vec(u, 1, {.25, .5, .75})", insert_vec(u, 1, {.25, .5, .75}));
+//@
+	CodePrinter::WFE();
+
+	codeprinter.print("insert and remove a matrix into a matrix");
+//@insert a vector into a matrix
+	print("matrix", matrix);
+	print("insert_val(MD({{1,2,3}, {7,8,9}}), 1, {4,5,6})", insert_val(MD({{1,2,3}, {7,8,9}}), 1, {4,5,6}));
+	print("insert_vec(MD({{1,2,3},{13,14,15}}), 1, {{4,5,6},{7,8,9},{10,11,12}})", insert_vec(MD({{1,2,3},{13,14,15}}), 1, {{4,5,6},{7,8,9},{10,11,12}}));
+	print("remove(MD({{1,2,3}, {3,4,5}, {7,8,9}}), 0)", remove(MD({{1,2,3}, {4,5,6}, {7,8,9}}), 0));
+	print("remove(MD({{1,2,3}, {3,4,5}, {7,8,9}}), 1)", remove(MD({{1,2,3}, {4,5,6}, {7,8,9}}), 1));
+	print("remove(MD({{1,2,3}, {3,4,5}, {7,8,9}}), 2)", remove(MD({{1,2,3}, {4,5,6}, {7,8,9}}), 2));
+	print("~remove(~MD({{1,2,3}, {4,5,6}, {7,8,9}}), 1)", ~remove(~MD({{1,2,3}, {4,5,6}, {7,8,9}}), 1));
 //@
 	CodePrinter::WFE();
 
@@ -216,8 +240,8 @@ main() {
 //@create a matrix
 	MD
 	a = {
-		{+1., +2., +3., +4.},
-		{-2., +0., +2., +0.}};
+	{+1., +2., +3., +4.},
+	{-2., +0., +2., +0.}};
 //@
 	CodePrinter::WFE();
 
@@ -295,8 +319,8 @@ main() {
 //@matrix operator matrix
 	MD
 	b = {
-		{+1., +1., +1., +1.},
-		{-1., +1., -1., +1.}};
+	{+1., +1., +1., +1.},
+	{-1., +1., -1., +1.}};
 
 	print("a", a);
 	print("b", b);
@@ -336,10 +360,10 @@ main() {
 	codeprinter.print("vector times matrix");
 //@vector times matrix
 	a = {
-		{+1., +1., +1., +1.},
-		{+1., -1., +1., -1.},
-		{+1., +1., -1., -1.},
-		{+1., -1., -1., +1.}};
+	{+1., +1., +1., +1.},
+	{+1., -1., +1., -1.},
+	{+1., +1., -1., -1.},
+	{+1., -1., -1., +1.}};
 
 	print("v", v);
 	print("a", a);
@@ -370,8 +394,8 @@ main() {
 	codeprinter.print("some functions");
 //@some functions
 	a = {
-		{+3., +4.},
-		{-4., +3.}};
+	{+3., +4.},
+	{-4., +3.}};
 
 	a += .0001;
 
@@ -401,15 +425,15 @@ main() {
 	// complex vector operator
 	Tsr< CMPLX >
 	sigma = {
-		{
-			{CMPLX(0.l, 0.l), CMPLX(1.l, 0.l)},
-			{CMPLX(1.l, 0.l), CMPLX(0.l, 0.l)}},
-		{
-			{CMPLX(0.l, 0.l), CMPLX(0.l, -1.l)},
-			{CMPLX(0.l, 1.l), CMPLX(0.l,  0.l)}},
-		{
-			{CMPLX(1.l, 0.l), CMPLX( 0.l, 0.l)},
-			{CMPLX(0.l, 0.l), CMPLX(-1.l, 0.l)}}};
+	{
+	{CMPLX(0.l, 0.l), CMPLX(1.l, 0.l)},
+	{CMPLX(1.l, 0.l), CMPLX(0.l, 0.l)}},
+	{
+	{CMPLX(0.l, 0.l), CMPLX(0.l, -1.l)},
+	{CMPLX(0.l, 1.l), CMPLX(0.l,  0.l)}},
+	{
+	{CMPLX(1.l, 0.l), CMPLX( 0.l, 0.l)},
+	{CMPLX(0.l, 0.l), CMPLX(-1.l, 0.l)}}};
 
 	print("sigma[0]", sigma[0]);
 	print("sigma[1]", sigma[1]);
@@ -451,8 +475,8 @@ main() {
 
 	// print only a 30x30 frame
 	print(
-		"round(sub(big100x100, 0, 0, 30, 30), 2)",
-		 round(sub(big100x100, 0, 0, 30, 30), 2));
+	"round(sub(big100x100, 0, 0, 30, 30), 2)",
+	round(sub(big100x100, 0, 0, 30, 30), 2));
 //@
 	CodePrinter::WFE();
 
@@ -463,16 +487,16 @@ main() {
 
 	// print only a 30x30 frame again
 	print(
-		"round(sub(big100x100i, 0, 0, 30, 30), 2)",
-		 round(sub(big100x100i, 0, 0, 30, 30), 2));
+	"round(sub(big100x100i, 0, 0, 30, 30), 2)",
+	round(sub(big100x100i, 0, 0, 30, 30), 2));
 //@
 	CodePrinter::WFE();
 
 	codeprinter.print("check the result");
 //@check the result
 	print(
-		"round(sub(big100x100i | big100x100, 0, 0, 100, 100), 2)",
-		 round(sub(big100x100i | big100x100, 0, 0, 100, 100), 2));
+	"round(sub(big100x100i | big100x100, 0, 0, 100, 100), 2)",
+	round(sub(big100x100i | big100x100, 0, 0, 100, 100), 2));
 //@
 	CodePrinter::WFE();
 
@@ -549,8 +573,8 @@ main() {
 	// second one connects the 3 + 1 = 4 hidden neurons to 3 output neurons
 	TD // actually this is not a tensor but only a Vec< MD > aka std::vector< std::vector< std::vector< D > > >
 	weights = {
-		round(2. * mrnd< D >(3, 9) - 1., 2),
-		round(2. * mrnd< D >(3, 4) - 1., 2)
+	round(2. * mrnd< D >(3, 9) - 1., 2),
+	round(2. * mrnd< D >(3, 4) - 1., 2)
 	};
 
 	// show weights for input and hidden layers
@@ -576,14 +600,14 @@ main() {
 	// every row of this matrix should be remembered by its representant in teacherIn
 	MD
 	teacherOut = {
-		{0., 0., 0.},
-		{0., 0., 1.},
-		{0., 1., 0.},
-		{0., 1., 1.},
-		{1., 0., 0.},
-		{1., 0., 1.},
-		{1., 1., 0.},
-		{1., 1., 1.}};
+	{0., 0., 0.},
+	{0., 0., 1.},
+	{0., 1., 0.},
+	{0., 1., 1.},
+	{1., 0., 0.},
+	{1., 0., 1.},
+	{1., 1., 0.},
+	{1., 1., 1.}};
 //@
 	CodePrinter::WFE();
 
@@ -827,24 +851,24 @@ main() {
 	d(2),
 
 	xorIn = {
-		{0., 0.},
-		{0., 1.},
-		{1., 0.},
-		{1., 1.}},
+	{0., 0.},
+	{0., 1.},
+	{1., 0.},
+	{1., 1.}},
 
 	xorOut = {
-		{0.},
-		{1.},
-		{1.},
-		{0.}};
+	{0.},
+	{1.},
+	{1.},
+	{0.}};
 
 	srand(2);
 
 	TD
 	xorW = {
 
-		2. * mrnd< D >(2, 3) - 1.,
-		2. * mrnd< D >(1, 3) - 1.
+	2. * mrnd< D >(2, 3) - 1.,
+	2. * mrnd< D >(1, 3) - 1.
 	};
 
 	for(UI loop = 1; loop <= 100000; ++ loop) {
@@ -908,21 +932,21 @@ main() {
 //@XOR {-1, +1} > {-1, +1}
 
 	xorIn = {
-		{-1., -1.},
-		{-1., +1.},
-		{+1., -1.},
-		{+1., +1.}};
+	{-1., -1.},
+	{-1., +1.},
+	{+1., -1.},
+	{+1., +1.}};
 
 	xorOut = {
-		{-1.},
-		{+1.},
-		{+1.},
-		{-1.}};
+	{-1.},
+	{+1.},
+	{+1.},
+	{-1.}};
 
 	xorW = {
 
-		2. * mrnd< D >(2, 3) - 1.,
-		2. * mrnd< D >(1, 3) - 1.
+	2. * mrnd< D >(2, 3) - 1.,
+	2. * mrnd< D >(1, 3) - 1.
 	};
 
 	for(UI loop = 1; loop <= 100000; ++ loop) {
@@ -990,8 +1014,8 @@ main() {
 
 	xorW = {
 
-		2. * mrnd< D >(2, 3) - 1.,
-		2. * mrnd< D >(1, 3) - 1.
+	2. * mrnd< D >(2, 3) - 1.,
+	2. * mrnd< D >(1, 3) - 1.
 	};
 
 	for(UI loop = 1; loop <= 100000; ++ loop) {
@@ -1001,7 +1025,7 @@ main() {
 
 		addBias(o[0] = xorIn[pattern]);
 		addBias(o[1] = trnsfrm(xorW[0] | o[0], act_m1p1));
-				o[2] = trnsfrm(xorW[1] | o[1], act_m1p1);
+		o[2] = trnsfrm(xorW[1] | o[1], act_m1p1);
 
 		d[1] = trnsfrm(o[2], diffAct_m1p1) * (o[2] - xorOut[pattern]);
 		d[0] = trnsfrm(remBias(o[1]), diffAct_m1p1) * (d[1] | xorW[1]);
@@ -1037,25 +1061,25 @@ main() {
 	teacherIn = {
 	//              minds
 	//    | conscious | subconscious |
-		{0, 0, 0, 0, 0,    0, 0},
-		{0, 0, 1, 0, 0,    0, 0},
-		{0, 1, 0, 1, 0,    0, 0},
-		{1, 0, 0, 0, 1,    0, 0},
-		{1, 1, 1, 1, 1,    0, 0},
-		{1, 0, 0, 0, 1,    0, 1},
-		{1, 0, 0, 0, 1,    1, 0},
-		{1, 0, 0, 0, 1,    1, 1}};
+	{0, 0, 0, 0, 0,    0, 0},
+	{0, 0, 1, 0, 0,    0, 0},
+	{0, 1, 0, 1, 0,    0, 0},
+	{1, 0, 0, 0, 1,    0, 0},
+	{1, 1, 1, 1, 1,    0, 0},
+	{1, 0, 0, 0, 1,    0, 1},
+	{1, 0, 0, 0, 1,    1, 0},
+	{1, 0, 0, 0, 1,    1, 1}};
 
 	// remember simply what has to come next
 	teacherOut = {
-		teacherIn[1],
-		teacherIn[2],
-		teacherIn[3],
-		teacherIn[4],
-		teacherIn[5],
-		teacherIn[6],
-		teacherIn[7],
-		teacherIn[0]};
+	teacherIn[1],
+	teacherIn[2],
+	teacherIn[3],
+	teacherIn[4],
+	teacherIn[5],
+	teacherIn[6],
+	teacherIn[7],
+	teacherIn[0]};
 
 	// we need again 2 matrices of weights
 	TD
@@ -1094,7 +1118,7 @@ main() {
 	// now the brain hopefully knows the letter A
 
 	// this is everything that's needed for remembering a pattern
-	#define REM for(UI i = 0; i < len(brain); ++ i) {addBias(o[i]); o[i + 1] = trnsfrm(brain[i] | o[i], act_0p1);}
+#define REM for(UI i = 0; i < len(brain); ++ i) {addBias(o[i]); o[i + 1] = trnsfrm(brain[i] | o[i], act_0p1);}
 
 	// show our brain an empty vector and hope it will remember the letter A
 	o[0] = {0, 0, 0, 0, 0, 0, 0};
@@ -1183,33 +1207,33 @@ main() {
 			print("loop", loop);
 			print("sse:", mlp.rms());
 			std::cout
-				<< " --------------------------------------------- " << std::endl
-				<< "| Bits:                     0   correct 0     |" << std::endl
-				<< "| Bits:                     1 incorrect 0     |" << std::endl
-				<< "| Bits:                     2 incorrect 1     |" << std::endl
-				<< "| Bits:                     3   correct 1     |" << std::endl
-				<< " ---------- ---------------------------------- " << std::endl
-				<< "| Y        |  X        ==>  Z = X * Y         |" << std::endl
-				<< "| 2  1  0  |  2  1  0       5  4  3  2  1  0  |" << std::endl
-				<< " ----------+---------------------------------- " << std::endl;
+			<< " --------------------------------------------- " << std::endl
+			<< "| Bits:                     0   correct 0     |" << std::endl
+			<< "| Bits:                     1 incorrect 0     |" << std::endl
+			<< "| Bits:                     2 incorrect 1     |" << std::endl
+			<< "| Bits:                     3   correct 1     |" << std::endl
+			<< " ---------- ---------------------------------- " << std::endl
+			<< "| Y        |  X        ==>  Z = X * Y         |" << std::endl
+			<< "| 2  1  0  |  2  1  0       5  4  3  2  1  0  |" << std::endl
+			<< " ----------+---------------------------------- " << std::endl;
 
 			for(UI i = 0; i < 64; ++ i) {
 
 				mlp.remember(x_y[i]);
 
 				std::cout
-					<< "| "
-					<< sub(x_y[i], 0, 3)
-					<< "|  "
-					<< sub(x_y[i], 3, 3)
-					<< "==>  "
-					<< round((2. * mlp.output() + x_times_y[i]))
-					<< "|"
-					<< std::endl;
+				<< "| "
+				<< sub(x_y[i], 0, 3)
+				<< "|  "
+				<< sub(x_y[i], 3, 3)
+				<< "==>  "
+				<< round((2. * mlp.output() + x_times_y[i]))
+				<< "|"
+				<< std::endl;
 			}
 
 			std::cout
-				<< " ---------- ---------------------------------- " << std::endl << std::endl;
+			<< " ---------- ---------------------------------- " << std::endl << std::endl;
 		}
 	}
 //@
