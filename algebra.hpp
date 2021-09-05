@@ -1594,7 +1594,7 @@ namespace alg {
 	}
 
 	template< typename T = double >
-	Vec< T > push_back(Vec< T > & p_vec, T const & p_val) {
+	Vec< T > & push_back(Vec< T > & p_vec, T const & p_val) {
 
 		p_vec.push_back(p_val);
 
@@ -1602,19 +1602,48 @@ namespace alg {
 	}
 
 	template< typename T = double >
-	Vec< T > push_front(Vec< T > & p_vec, T const & p_val) {
+	Vec< T > & push_front(Vec< T > & p_vec, T const & p_val) {
 
-		p_vec.push_back(p_vec[p_vec.size()- 1]);
+		if(0 < p_vec.size()) {
+			p_vec.push_back(p_vec[p_vec.size() - 1]);
+			for(std::size_t i = p_vec.size() - 1; 0 < i; -- i) {
 
-		for(std::size_t i = p_vec.size() - 1; 0 < i; -- i) {
-
-			p_vec[i] = p_vec[i - 1];
+				p_vec[i] = p_vec[i - 1];
+			}
+			p_vec[0] = p_val;
+		} else {
+			p_vec.push_back(p_val);
 		}
-
-		p_vec[0] = p_val;
 
 		return p_vec;
 	}
+
+	template< typename T = double >
+	Vec< T > combine(Vec< T > const & p_vec0, Vec< T > const & p_vec1) {
+
+		Vec< T >
+		v(p_vec0.size() + p_vec1.size());
+
+		std::copy(p_vec0.cbegin(), p_vec0.cend(), v.begin());
+		std::copy(p_vec1.cbegin(), p_vec1.cend(), v.begin() + p_vec0.size());
+
+		return v;
+	}
+
+	template< typename T = double >
+	Vec< T > & rem(Vec< T > & p_vec, std::size_t const & p_id) {
+
+		if(p_id < p_vec.size() - 1) {
+
+			std::copy(p_vec.cbegin() + p_id + 1, p_vec.cend(), p_vec.begin() + p_id);
+		}
+
+		p_vec.pop_back();
+
+		return p_vec;
+	}
+
+
 
 //@even more abbr.
 	typedef std::size_t UI;
