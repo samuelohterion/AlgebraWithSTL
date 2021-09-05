@@ -1628,12 +1628,21 @@ inline Mat< T >
 		return v;
 	}
 
+//	template< typename T = double >
+//	Vec< T > remove(Vec< T > const & p_vec, std::size_t const & p_id) {
+//		Vec< T >
+//		v(p_vec.size() - 1);
+//		std::copy(p_vec.cbegin(), p_vec.cbegin() + p_id, v.begin());
+//		std::copy(p_vec.cbegin() + p_id + 1, p_vec.cend(), v.begin() + p_id);
+//		return v;
+//	}
+
 	template< typename T = double >
-	Vec< T > remove(Vec< T > const & p_vec, std::size_t const & p_id) {
+	Vec< T > remove(Vec< T > const & p_vec, std::size_t const & p_id, std::size_t const & p_len = 1) {
 		Vec< T >
-		v(p_vec.size() - 1);
+		v(p_vec.size() - p_len);
 		std::copy(p_vec.cbegin(), p_vec.cbegin() + p_id, v.begin());
-		std::copy(p_vec.cbegin() + p_id + 1, p_vec.cend(), v.begin() + p_id);
+		std::copy(p_vec.cbegin() + p_id + p_len, p_vec.cend(), v.begin() + p_id);
 		return v;
 	}
 
