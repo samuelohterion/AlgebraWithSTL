@@ -173,7 +173,7 @@ main() {
 	CodePrinter::WFE();
 
 	codeprinter.print("insert and remove a matrix into a matrix");
-//@insert a vector into a matrix
+//@insert and remove a matrix into a matrix
 	print("matrix", matrix);
 	print("insert_val(MD({{1,2,3}, {7,8,9}}), 1, {4,5,6})", insert_val(MD({{1,2,3}, {7,8,9}}), 1, {4,5,6}));
 	print("insert_vec(MD({{1,2,3},{13,14,15}}), 1, {{4,5,6},{7,8,9},{10,11,12}})", insert_vec(MD({{1,2,3},{13,14,15}}), 1, {{4,5,6},{7,8,9},{10,11,12}}));
