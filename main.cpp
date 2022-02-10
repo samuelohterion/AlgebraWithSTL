@@ -472,52 +472,52 @@ main() {
 //@
 	CodePrinter::WFE();
 
-	codeprinter.print("now a realy big matrix 100 x 100");
-//@now a realy big matrix 100 x 100
+	codeprinter.print("now a really big matrix 100 x 100");
+//@now a really big matrix 1000 x 1000
 	Mat< long double >
-	big100x100  = mrnd< long double >(100, 100) - .5l;
+	big1000x1000  = mrnd< long double >(1000, 1000) - .5l;
 
 	// print only a 30x30 frame
 	print(
-	"round(sub(big100x100, 0, 0, 30, 30), 2)",
-	round(sub(big100x100, 0, 0, 30, 30), 2));
+	"round(sub(big1000x1000, 0, 0, 30, 30), 2)",
+	round(sub(big1000x1000, 0, 0, 30, 30), 2));
 //@
 	CodePrinter::WFE();
 
 	codeprinter.print("calc its inverse");
 //@calc its inverse
 	Mat< long double >
-	big100x100i = inv(big100x100);
+	big1000x1000i = inv(big1000x1000);
 
 	// print only a 30x30 frame again
 	print(
-	"round(sub(big100x100i, 0, 0, 30, 30), 2)",
-	round(sub(big100x100i, 0, 0, 30, 30), 2));
+	"round(sub(big1000x1000i, 0, 0, 30, 30), 2)",
+	round(sub(big1000x1000i, 0, 0, 30, 30), 2));
 //@
 	CodePrinter::WFE();
 
 	codeprinter.print("check the result");
 //@check the result
 	print(
-	"round(sub(big100x100i | big100x100, 0, 0, 100, 100), 2)",
-	round(sub(big100x100i | big100x100, 0, 0, 100, 100), 2));
+	"round(sub(big1000x1000i | big1000x1000, 0, 0, 100, 100), 2)",
+	round(sub(big1000x1000i | big1000x1000, 0, 0, 100, 100), 2));
 //@
 	CodePrinter::WFE();
 
-	codeprinter.print("calculate the determinant of big100x100");
-//@calculate the determinant of big100x100
+	codeprinter.print("calculate the determinant of big1000x1000");
+//@calculate the determinant of big1000x1000
 	long double
-	detBig = det(big100x100);
-	print("det(big100x100)",  detBig);
+	detBig = det(big1000x1000);
+	print("det(big1000x1000)",  detBig);
 //@
 	CodePrinter::WFE();
 
-	codeprinter.print("calculate the determinant of big100x100i");
-//@calculate the determinant of big100x100i
+	codeprinter.print("calculate the determinant of big1000x1000i");
+//@calculate the determinant of big1000x1000i
 	long double
-	detBigi = det(big100x100i);
-	print("det(big100x100)",  detBigi);
-	print("det(big100x100i) * det(big100x100)", detBigi * detBig);
+	detBigi = det(big1000x1000i);
+	print("det(big1000x1000)",  detBigi);
+	print("det(big1000x1000i) * det(big1000x1000)", detBigi * detBig);
 //@
 	CodePrinter::WFE();
 
