@@ -85,8 +85,8 @@ Matrix x Matrix.
 Here Vector x Vector is the scalar product
 ```
 Mat<double> zeta = {
-{ 1. / 2., 0.,      0.      },
-{ 0.,      2. / 3., 0.      },
+  { 1. / 2., 0.,      0.      },
+  { 0.,      2. / 3., 0.      },
   { 0.,      0.,      3. / 5. }
 };
 
