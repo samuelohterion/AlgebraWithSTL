@@ -85,6 +85,31 @@ Matrix times Matrix.
 Here Vector times Vector is the scalar product
 ```
 #include "algebra.cpp"
+// just for abbr.
+// vector
+// template < typename T > using
+// Vec = std::vector< T >;
+
+//// matrix
+// template < typename T > using
+// Mat = std::vector< std::vector< T > >;
+
+//// tensor 3rd degree
+// template < typename T > using
+// Tsr = std::vector< std::vector< std::vector< T > > >;
+
+//// tensor 4rd degree
+// template < typename T > using
+// Tsr4 = std::vector< std::vector< std::vector< std::vector< T > > > >;
+
+/*
+typedef std::size_t   UI;
+typedef Vec< UI >     VU;
+typedef double         D;
+typedef Vec< D >      VD;
+typedef Mat< D >      MD;
+typedef Tsr< D >      TD;
+*/
 
 using namespace alg;
 typedef std::complex< long double > CMPLX;
