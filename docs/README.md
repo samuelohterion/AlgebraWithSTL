@@ -73,18 +73,24 @@ CodePrinter::WFE( );
 ```
 #### algebra usage
 
-This is too much to show here again.
-Watch the demo and everything will be clear!
-But 2 short examples (not in the demo):
+Note:
 ^ works as outer product
 | works as inner product like in
 Vector times Vector,
 Matrix times Vector,
 Vector times Matrix,
 Matrix times Matrix.
-Here Vector times Vector is the scalar product
+Vector times Vector is the scalar product
+
+This is too much to show here again.
+Watch the demo and everything will be clear!
+But 2 short examples (not in the demo):
+
 ```
 #include "algebra.cpp"
+
+using namespace alg;
+//@some typedefs for std::vector< T >
 // just for abbr.
 // vector
 // template < typename T > using
@@ -110,8 +116,7 @@ typedef Vec< D >      VD;
 typedef Mat< D >      MD;
 typedef Tsr< D >      TD;
 */
-
-using namespace alg;
+//@
 typedef std::complex< long double > CMPLX;
 
 int
@@ -144,24 +149,25 @@ main() {
 	Vec< CMPLX >
 	p = {CMPLX(3.l, 0.l), CMPLX(3.l, 0.l), CMPLX(5.l, 0.l)};
 
-	print("p1", p);
+	print("p", p);
 
 	Mat< CMPLX >
-	sigma1Xp1 = {sigma[0] * p[0] + sigma[1] * p[1] + sigma[2] * p[2]};
+	sXp = {sigma[0] * p[0] + sigma[1] * p[1] + sigma[2] * p[2]};
 
-	print("sigma1Xp1", sigma1Xp1);
+	print("sXp", sXp);
 
-// invert (sigma x p1)
+// invert (sigma x p)
 	// complex vector operator
 	Mat< CMPLX >
-	sXpi = inv(sigma1Xp1);
+	sXpi = inv(sXp);
 
-	print("sXpi = inv(sigma1Xp1)\nround(sXpi, 4)", round(sXpi, 4));
-	print("round(sXpi | sigma1Xp1, 4)", round(sXpi | sigma1Xp1, 4));
-	print("round(sigma1Xp1 | sXpi, 4)", round(sigma1Xp1 | sXpi, 4));
+	print("sXpi = inv(sXp)\nround(sXpi, 4)", round(sXpi, 4));
+	print("round(sXpi | sXp, 4)", round(sXpi | sXp, 4));
+	print("round(sXp | sXpi, 4)", round(sXp | sXpi, 4));
 	
 	return 0;
 }
+
 ```
 output:
 ```
@@ -177,23 +183,23 @@ sigma[2]
   (1,0)  (0,0)
   (0,0) (-1,0)
 
-p1
+p
 (3,0)  (3,0)  (5,0)  
 
-sigma1Xp1
+sXp
   (5,0) (3,-3)
   (3,3) (-5,0)
 
-sXpi = inv(sigma1Xp1)
+sXpi = inv(sXp)
 round(sXpi, 4)
        (0.1163,0) (0.0698,-0.0698)
   (0.0698,0.0698)      (-0.1163,0)
 
-round(sXpi | sigma1Xp1, 4)
+round(sXpi | sXp, 4)
  (1,0) (0,0)
  (0,0) (1,0)
 
-round(sigma1Xp1 | sXpi, 4)
+round(sXp | sXpi, 4)
  (1,0) (0,0)
  (0,0) (1,0)
 ```
