@@ -78,39 +78,102 @@ Watch the demo and everything will be clear!
 But 2 short examples (not in the demo):
 ^ works as outer product
 | works as inner product like in
-Vector x Vector,
-Matrix x Vector,
-Vector x Matrix,
-Matrix x Matrix.
-Here Vector x Vector is the scalar product
+Vector times Vector,
+Matrix times Vector,
+Vector times Matrix,
+Matrix times Matrix.
+Here Vector times Vector is the scalar product
 ```
-Mat<double> zeta = {
-  { 1. / 2., 0.,      0.      },
-  { 0.,      2. / 3., 0.      },
-  { 0.,      0.,      3. / 5. }
-};
+#include "algebra.cpp"
 
-Vec<double>
-primes    = { 2, 3, 5 },
-positions = zeta | primes;
+using namespace alg;
+typedef std::complex< long double > CMPLX;
 
-std::cout << "primes:\n" << primes << std::endl;
-std::cout << "positions:\n" << positions << std::endl;
-std::cout << "scalar product of primes and their positions is also prime! crazy!\n"
-<< ( positions | primes )
-<< std::endl;
+int
+main() {
+
+// Pauli Matrices
+	// complex vector operator
+	Tsr< CMPLX >
+	sigma = {
+		{
+			{CMPLX(0.l, 0.l), CMPLX(1.l, 0.l)},
+			{CMPLX(1.l, 0.l), CMPLX(0.l, 0.l)}
+		},
+		{
+			{CMPLX(0.l, 0.l), CMPLX(0.l, -1.l)},
+			{CMPLX(0.l, 1.l), CMPLX(0.l,  0.l)}
+		},
+		{
+			{CMPLX(1.l, 0.l), CMPLX( 0.l, 0.l)},
+			{CMPLX(0.l, 0.l), CMPLX(-1.l, 0.l)}
+		}
+	};
+
+	print("sigma[0]", sigma[0]);
+	print("sigma[1]", sigma[1]);
+	print("sigma[2]", sigma[2]);
+
+// complex 3d vector
+	// only real values
+	Vec< CMPLX >
+	p = {CMPLX(3.l, 0.l), CMPLX(3.l, 0.l), CMPLX(5.l, 0.l)};
+
+	print("p1", p);
+
+	Mat< CMPLX >
+	sigma1Xp1 = {sigma[0] * p[0] + sigma[1] * p[1] + sigma[2] * p[2]};
+
+	print("sigma1Xp1", sigma1Xp1);
+
+// invert (sigma x p1)
+	// complex vector operator
+	Mat< CMPLX >
+	sXpi = inv(sigma1Xp1);
+
+	print("sXpi = inv(sigma1Xp1)\nround(sXpi, 4)", round(sXpi, 4));
+	print("round(sXpi | sigma1Xp1, 4)", round(sXpi | sigma1Xp1, 4));
+	print("round(sigma1Xp1 | sXpi, 4)", round(sigma1Xp1 | sXpi, 4));
+	
+	return 0;
+}
 ```
 output:
 ```
-primes:
-2  3  5  
-positions:
-1  2  3  
-scalar product of primes and their positions is also prime! crazy!
-23
+sigma[0]
+ (0,0) (1,0)
+ (1,0) (0,0)
+
+sigma[1]
+  (0,0) (0,-1)
+  (0,1)  (0,0)
+
+sigma[2]
+  (1,0)  (0,0)
+  (0,0) (-1,0)
+
+p1
+(3,0)  (3,0)  (5,0)  
+
+sigma1Xp1
+  (5,0) (3,-3)
+  (3,3) (-5,0)
+
+sXpi = inv(sigma1Xp1)
+round(sXpi, 4)
+       (0.1163,0) (0.0698,-0.0698)
+  (0.0698,0.0698)      (-0.1163,0)
+
+round(sXpi | sigma1Xp1, 4)
+ (1,0) (0,0)
+ (0,0) (1,0)
+
+round(sigma1Xp1 | sXpi, 4)
+ (1,0) (0,0)
+ (0,0) (1,0)
 ```
 
-or
+or calulate a checker board matrix from a vector
   
   
 ```
