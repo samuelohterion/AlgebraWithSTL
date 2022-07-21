@@ -5,15 +5,10 @@ Some algebra with std::vector<T> and std::vector<std::vector<T>>
 This is a small collection of some functions and operator overloadings for convenient work
 with STL std::vector<T> and std::vector<std::vector<T>> as mathematical objects.
 
-## Whetting your appetite!
+## Wetting your appetite!
 There are some small neuronal network examples
 
 ## How to build and run?
-### Qt-Creator
-- Load the Qt-Project *AlgebraWithSTL.pro* in Qt-Creator!
-- Press Play!
-
-### Console
 - Open a console and go into the source direcory AlgebraWithSTL!
 - Run *make*!
   ```..../[myCPPProjects]/AlgebraWithSTL$ make```
