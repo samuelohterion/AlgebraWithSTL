@@ -100,7 +100,19 @@ std::cout << "scalar product of primes and their positions is also prime! crazy!
 << ( positions | primes )
 << std::endl;
 ```
+output:
+```
+primes:
+2  3  5  
+positions:
+1  2  3  
+scalar product of primes and their positions is also prime! crazy!
+23
+```
+
 or
+  
+  
 ```
 Vec<int>
 v = {0,1,0,1,0,1,0,1};
@@ -110,7 +122,7 @@ Mat<int> checkerboard = ( 1 + ( v ^ -v ) ) / 2;
 
 std::cout << "checkerboard:\n" << checkerboard << std::endl;
 ```
-
+output:
 ```
 checkerboard:
  0 1 0 1 0 1 0 1
