@@ -42,3 +42,8 @@ target_wrapper.*
 # QtCreator CMake
 CMakeLists.txt.user*
 .buildconfig
+
+build/
+AlgebraWithSTL.pro.user
+
+weights

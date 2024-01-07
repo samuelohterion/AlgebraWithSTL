@@ -472,7 +472,7 @@ main() {
 //@
 	CodePrinter::WFE();
 
-	codeprinter.print("now a really big matrix 100 x 100");
+	codeprinter.print("now a really big matrix 1000 x 1000");
 //@now a really big matrix 1000 x 1000
 	Mat< long double >
 	big1000x1000  = mrnd< long double >(1000, 1000) - .5l;
