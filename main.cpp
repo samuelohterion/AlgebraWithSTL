@@ -429,15 +429,17 @@ main() {
 	// complex vector operator
 	Tsr< CMPLX >
 	sigma = {
-	{
-	{CMPLX(0.l, 0.l), CMPLX(1.l, 0.l)},
-	{CMPLX(1.l, 0.l), CMPLX(0.l, 0.l)}},
-	{
-	{CMPLX(0.l, 0.l), CMPLX(0.l, -1.l)},
-	{CMPLX(0.l, 1.l), CMPLX(0.l,  0.l)}},
-	{
-	{CMPLX(1.l, 0.l), CMPLX( 0.l, 0.l)},
-	{CMPLX(0.l, 0.l), CMPLX(-1.l, 0.l)}}};
+		{
+			{CMPLX(0.l, 0.l), CMPLX(1.l, 0.l)},
+			{CMPLX(1.l, 0.l), CMPLX(0.l, 0.l)}
+		}, {
+			{CMPLX(0.l, 0.l), CMPLX(0.l, -1.l)},
+			{CMPLX(0.l, 1.l), CMPLX(0.l,  0.l)}
+		}, {
+			{CMPLX(1.l, 0.l), CMPLX( 0.l, 0.l)},
+			{CMPLX(0.l, 0.l), CMPLX(-1.l, 0.l)}
+		}
+	};
 
 	print("sigma[0]", sigma[0]);
 	print("sigma[1]", sigma[1]);
