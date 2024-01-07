@@ -671,11 +671,11 @@ inline Mat< T >
 		Vec< T >
 		ret(p_size);
 
-		long double rand_max_rec = 1. / RAND_MAX;
+		double rand_max_rec = 1. / RAND_MAX;
 
 		for(auto & r : ret)
 
-			r = static_cast< long double >(random()) * rand_max_rec;
+			r = static_cast< double >(random()) * rand_max_rec;
 
 		return ret;
 	}
