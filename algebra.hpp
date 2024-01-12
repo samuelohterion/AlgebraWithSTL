@@ -675,7 +675,7 @@ inline Mat< T >
 
 		for(auto & r : ret)
 
-			r = static_cast< double >(random()) * rand_max_rec;
+			r = static_cast< double >(std::rand()) * rand_max_rec;
 
 		return ret;
 	}
