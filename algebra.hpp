@@ -1380,10 +1380,10 @@ inline Mat< T >
 
 	template< typename T = double >
 	bool
-	save(std::string const & P_filename, Vec< T > const & p_vec) {
+    save(std::string const & p_filename, Vec< T > const & p_vec) {
 
 		std::ofstream
-		ofs(P_filename);
+        ofs(p_filename);
 
 		if(! ofs.is_open())
 
