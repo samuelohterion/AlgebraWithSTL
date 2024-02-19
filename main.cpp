@@ -123,22 +123,34 @@ main() {
 //@
 	CodePrinter::WFE();
 
-	codeprinter.print("print a vector");
+    codeprinter.print("print a vector");
 //@print a vector
-	std::cout << "u" << std::endl << u << std::endl << std::endl;
-	// the same as before, just for lazyness
-	print("u", u);
+    std::cout << "u" << std::endl << u << std::endl << std::endl;
+    // the same as before, just for lazyness
+    print("u", u);
 //@
-	CodePrinter::WFE();
+    CodePrinter::WFE();
 
-	codeprinter.print("add a value at the end of a vector");
+    codeprinter.print("apply a function to a vector");
+//@apply a function to a vector
+    VD
+    s = {-2.,-1.,0.,1.,2.};
+    print("sgn(-2)", sgn(-2.));
+    print("sgn( 0)", sgn(0.));
+    print("sgn(+2)", sgn(+2.));
+    print("s", s);
+    print("sgnv(s)", sgnv(s));
+//@
+    CodePrinter::WFE();
+
+    codeprinter.print("add a value at the end of a vector");
 //@add a value at the end of a vector
 	print("push_back(u, 4.)", push_back(u, 4.));
 	print("push_front(u, -1.)", push_front(u, -1.));
 	print("pop_back(u)", pop_back(u));
 	print("+u", +u);
 	print("pop_front(u)", pop_front(u));
-	print("+u", +u);
+    print("-u", -u);
 
 //@
 	CodePrinter::WFE();

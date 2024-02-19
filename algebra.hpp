@@ -1637,36 +1637,82 @@ inline Mat< T >
 //		return v;
 //	}
 
-	template< typename T = double >
-	Vec< T > remove(Vec< T > const & p_vec, std::size_t const & p_id, std::size_t const & p_len = 1) {
-		Vec< T >
-		v(p_vec.size() - p_len);
-		std::copy(p_vec.cbegin(), p_vec.cbegin() + p_id, v.begin());
-		std::copy(p_vec.cbegin() + p_id + p_len, p_vec.cend(), v.begin() + p_id);
-		return v;
-	}
+    template< typename T = double >
+    Vec< T >
+    remove(Vec< T > const & p_vec, std::size_t const & p_id, std::size_t const & p_len = 1) {
+        Vec< T >
+        v(p_vec.size() - p_len);
+        std::copy(p_vec.cbegin(), p_vec.cbegin() + p_id, v.begin());
+        std::copy(p_vec.cbegin() + p_id + p_len, p_vec.cend(), v.begin() + p_id);
+        return v;
+    }
 
-	template< typename T = double >
-	Vec< T > insert_val(Vec< T > const & p_vec, std::size_t const & p_id, T const & p_val) {
-		Vec< T >
-		v(p_vec.size() + 1);
-		std::copy(p_vec.cbegin(), p_vec.cbegin() + p_id, v.begin());
-		v[p_id] = p_val;
-		std::copy(p_vec.cbegin() + p_id, p_vec.cend(), v.begin() + p_id + 1);
-		return v;
-	}
+    template< typename T = double >
+    Vec< T >
+    insert_val(Vec< T > const & p_vec, std::size_t const & p_id, T const & p_val) {
+        Vec< T >
+        v(p_vec.size() + 1);
+        std::copy(p_vec.cbegin(), p_vec.cbegin() + p_id, v.begin());
+        v[p_id] = p_val;
+        std::copy(p_vec.cbegin() + p_id, p_vec.cend(), v.begin() + p_id + 1);
+        return v;
+    }
 
-	template< typename T = Vec< double > >
-	T insert_vec(T const & p_vec1, std::size_t const & p_id, T const & p_vec2) {
-		T
-		v(p_vec1.size() + p_vec2.size());
-		std::copy(p_vec1.cbegin(), p_vec1.cbegin() + p_id, v.begin());
-		std::copy(p_vec2.cbegin(), p_vec2.cend(), v.begin() + p_id);
-		std::copy(p_vec1.cbegin() + p_id, p_vec1.cend(), v.begin() + p_id + p_vec2.size());
-		return v;
-	}
+    template< typename T = Vec< double > >
+    T
+    insert_vec(T const & p_vec1, std::size_t const & p_id, T const & p_vec2) {
+        T
+        v(p_vec1.size() + p_vec2.size());
+        std::copy(p_vec1.cbegin(), p_vec1.cbegin() + p_id, v.begin());
+        std::copy(p_vec2.cbegin(), p_vec2.cend(), v.begin() + p_id);
+        std::copy(p_vec1.cbegin() + p_id, p_vec1.cend(), v.begin() + p_id + p_vec2.size());
+        return v;
+    }
 
-//@even more abbr.
+    /*template< typename T = double>
+    Vec<T> sgn(Vec<T> p_vec) {
+        return std::transform(
+            p_vec.begin(),
+            p_vec.end(),
+            p_vec.begin(),
+            [](auto x) {
+            return x < 0
+                ? -1
+                : 0 < x
+                    ? 1
+                    : 0;
+            }
+        );
+    }
+*/
+    template <typename T>
+    T sgn(T const & p_v) {
+        return p_v < static_cast<T>(0)
+            ? static_cast<T>(-1)
+            : static_cast<T>(0) < p_v
+                ? static_cast<T>(1)
+                    : static_cast<T>(0);
+    }
+
+    template <typename T>
+    Vec<T> sgnv(Vec<T> p_v) {
+        std::transform(
+            p_v.begin(),
+            p_v.end(),
+            p_v.begin(),
+                [](auto x) {
+                return x < 0
+                    ? -1
+                    : 0 < x
+                        ? 1
+                        : 0;
+                }
+        );
+        return p_v;
+    }
+
+
+ //@even more abbr.
 	typedef std::size_t UI;
 	typedef double      D;
 	typedef Vec< UI >   VU;
