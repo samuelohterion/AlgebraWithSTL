@@ -118,7 +118,7 @@ namespace alg {
 
 	template < typename SOME_INTEGER_TYPE >
 	bool
-	gbit(SOME_INTEGER_TYPE  const & p_bitset, SIZE const & p_bitId) {
+	gbit(SOME_INTEGER_TYPE const & p_bitset, SIZE const & p_bitId) {
 
 		return (p_bitset >> p_bitId) & 1;
 	}

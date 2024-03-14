@@ -96,7 +96,7 @@ VD
 int
 main() {
 
-	srand(time_t(nullptr));
+	srand(1);
 
 	// arg is this file
 	CodePrinter
