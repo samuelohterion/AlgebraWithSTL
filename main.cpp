@@ -774,7 +774,7 @@ main() {
 
 		dw = neuron[2] - teacherOut[pattern];
 
-		if((loop == 1) || (loop == 10) || (loop == 1e2) || (loop == 1e3) || (loop == 1e4) || (loop == 1e5)) {
+		if((loop == 1) || (loop == 10) || (loop == 100) || (loop == 1000) || (loop == 10000) || (loop == 100000)) {
 
 			print("loop", loop);
 			print("sse:", dw | dw);
@@ -963,8 +963,8 @@ main() {
 
 	xorW = {
 
-	2. * mrnd< D >(2, 3) - 1.,
-	2. * mrnd< D >(1, 3) - 1.
+		2. * mrnd< D >(2, 3) - 1.,
+		2. * mrnd< D >(1, 3) - 1.
 	};
 
 	for(UI loop = 1; loop <= 100000; ++ loop) {

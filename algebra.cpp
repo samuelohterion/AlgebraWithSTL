@@ -19,7 +19,7 @@ namespace alg {
 		byteId = p_bitId >> 3,
 		bitId  = p_bitId & 0x7;
 
-		p_bitset[ byteId ] &= ( ~( 1 << bitId ) );
+		p_bitset[ byteId ] &= static_cast<char>( ~( 1 << bitId ) );
 	}
 
 	void
@@ -29,6 +29,6 @@ namespace alg {
 		byteId = p_bitId >> 3,
 		bitId  = p_bitId & 0x7;
 
-		p_bitset[ byteId ] |= ( 1 << bitId );
+		p_bitset[ byteId ] |= ( static_cast<char>(1 << bitId ) );
 	}
 }

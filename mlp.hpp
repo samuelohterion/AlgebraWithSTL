@@ -8,19 +8,23 @@ namespace alg {
 		private:
 			class Sig {
 				protected:
-					D mn, mx;
+					D mn, mx, dst;
 				public:
 					Sig(D const & p_min = 0, D const & p_max = 1.) :
 					mn(p_min),
-					mx(p_max) {}
+					mx(p_max),
+					dst(mx - mn) {}
 					D operator()(D const & p_net) const {
-						return mn + (mx - mn) / (1. + exp(-p_net));}};
+						return mn + dst / (1. + exp(-p_net));}};
 			class DSig : public Sig {
+				private:
+					D rdst;
 				public:
 					DSig(D const & p_min = 0, D const & p_max = 1.) :
-					Sig(p_min, p_max) {}
+					Sig(p_min, p_max),
+					rdst(1. / dst) {}
 					D operator()(D const & p_act) const {
-						return .0001 + (mx - p_act) * (p_act - mn) / (mx - mn);}};
+						return .001 + (mx - p_act) * (p_act - mn) * rdst;}};
 			VU         layer_sizes;
 			VD         i;
 			MD         o, d;
@@ -28,11 +32,9 @@ namespace alg {
 			D          eta;
 			Sig const  act;
 			DSig const dact;
-			// add a bias neuron of constant 1. to vector
 			VD & addBias(VD & p_vec) const {
 				p_vec.push_back(1.);
 				return p_vec;}
-			// remove the bias neuron from vector
 			VD & removeBias(VD & p_vec) const {
 				p_vec.pop_back();
 				return p_vec;}

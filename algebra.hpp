@@ -1,24 +1,23 @@
 #ifndef ALGEBRA_HPP
 #define ALGEBRA_HPP
-#include <stdlib.h>
-#include <math.h>
+
+#include <algorithm>
+#include <bitset>
+#include <complex>
+#include <cstring>
+#include <fstream>
+#include <initializer_list>
 #include <iomanip>
 #include <iostream>
 #include <iterator>
+#include <math.h>
 #include <ostream>
+#include <stdlib.h>
 #include <sstream>
-#include <string>
-#include <algorithm>
-#include <vector>
 #include <string>
 #include <string.h>
-#include <sstream>
-#include <fstream>
-#include <cstring>
-#include <initializer_list>
 #include <type_traits>
-#include <bitset>
-#include <complex>
+#include <vector>
 
 namespace alg {
 
@@ -113,18 +112,32 @@ namespace alg {
 
 	typedef std::size_t SIZE;
 
-	bool
-	gbit(char * p_bitset, SIZE const & p_bitId);
-
 	template < typename SOME_INTEGER_TYPE >
 	bool
 	gbit(SOME_INTEGER_TYPE const & p_bitset, SIZE const & p_bitId) {
 
 		return (p_bitset >> p_bitId) & 1;
+	}	
+
+	bool
+	gbit( char * p_bitset, SIZE const & p_bitId ) {
+
+		SIZE
+		byteId = p_bitId >> 3,
+		bitId  = p_bitId & 0x7;
+
+		return ( p_bitset[ byteId ] >> bitId ) & 1;
 	}
 
 	void
-	cbit(char * p_bitset, SIZE const & p_bitId);
+	cbit( char * p_bitset, SIZE const & p_bitId ) {
+
+		SIZE
+		byteId = p_bitId >> 3,
+		bitId  = p_bitId & 0x7;
+
+		p_bitset[ byteId ] &= static_cast<char>( ~( 1 << bitId ) );
+	}
 
 	template < typename SOME_INTEGER_TYPE >
 	void
@@ -133,9 +146,6 @@ namespace alg {
 		p_bitset &= (~(1 << p_bitId));
 	}
 
-	void
-	sbit(char * p_bitset, SIZE const & p_bitId);
-
 	template < typename SOME_INTEGER_TYPE >
 	void
 	sbit(SOME_INTEGER_TYPE  & p_bitset, SIZE const & p_bitId) {
@@ -143,6 +153,16 @@ namespace alg {
 		p_bitset |= (1 << p_bitId);
 	}
 
+	void
+	sbit( char * p_bitset, SIZE const & p_bitId ) {
+
+		SIZE
+		byteId = p_bitId >> 3,
+		bitId  = p_bitId & 0x7;
+
+		p_bitset[ byteId ] |= static_cast<char>( 1 << bitId );
+	}
+	
 	// vector
 	template < typename T > using
 	Vec = std::vector< T >;
@@ -202,7 +222,7 @@ namespace alg {
 		Vec< T >
 		r(p_vec.size());
 
-		std::transform(p_vec.begin(), p_vec.end(), r.begin(), p_fun);
+		std::transform(p_vec.cbegin(), p_vec.cend(), r.begin(), p_fun);
 
 		return r;
 	}
@@ -214,7 +234,7 @@ namespace alg {
 		Vec< T >
 		r(p_vec1.size());
 
-		std::transform(p_vec1.begin(), p_vec1.end(), p_vec2.begin(), p_vec2.end(), r.begin(), p_fun);
+		std::transform(p_vec1.cbegin(), p_vec1.cend(), p_vec2.cbegin(), r.begin(), p_fun);
 
 		return r;
 	}
@@ -787,9 +807,9 @@ inline Mat< T >
 
 		while(v < p_mat.cend() - 1)
 
-			p_os << vec2Str(*v++, len + 1) << std::endl;
+			p_os << vec2Str(*v++, static_cast<int>(len + 1)) << std::endl;
 
-		p_os << vec2Str(*v, len + 1);
+		p_os << vec2Str(*v, static_cast<int>(len + 1));
 
 		return p_os;
 	}
