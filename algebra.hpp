@@ -120,24 +120,10 @@ namespace alg {
 	}	
 
 	bool
-	gbit( char * p_bitset, SIZE const & p_bitId ) {
-
-		SIZE
-		byteId = p_bitId >> 3,
-		bitId  = p_bitId & 0x7;
-
-		return ( p_bitset[ byteId ] >> bitId ) & 1;
-	}
+	gbit( char * p_bitset, SIZE const & p_bitId );
 
 	void
-	cbit( char * p_bitset, SIZE const & p_bitId ) {
-
-		SIZE
-		byteId = p_bitId >> 3,
-		bitId  = p_bitId & 0x7;
-
-		p_bitset[ byteId ] &= static_cast<char>( ~( 1 << bitId ) );
-	}
+	cbit( char * p_bitset, SIZE const & p_bitId );
 
 	template < typename SOME_INTEGER_TYPE >
 	void
@@ -154,14 +140,7 @@ namespace alg {
 	}
 
 	void
-	sbit( char * p_bitset, SIZE const & p_bitId ) {
-
-		SIZE
-		byteId = p_bitId >> 3,
-		bitId  = p_bitId & 0x7;
-
-		p_bitset[ byteId ] |= static_cast<char>( 1 << bitId );
-	}
+	sbit( char * p_bitset, SIZE const & p_bitId );
 	
 	// vector
 	template < typename T > using
@@ -1277,7 +1256,8 @@ inline Mat< T >
 	round(T const & p_v, int const & p_digits = 0) {
 
 		T
-		r = exp10(-p_digits) * std::round(exp10(p_digits) * p_v);
+		r = pow(.1, p_digits) * std::round(pow(10., p_digits) * p_v);
+		// r = exp10(-p_digits) * std::round(exp10(p_digits) * p_v);
 
 		if(0 >= r * r) {
 
@@ -1292,8 +1272,10 @@ inline Mat< T >
 	round(Complex< T > const & p_v, int const & p_digits = 0) {
 
 		long double
-		a = exp10l(-p_digits),
-		b = exp10l(+p_digits);
+		a = powl(.1, p_digits),
+		b = powl(10., p_digits);
+		// a = exp10l(-p_digits),
+		// b = exp10l(+p_digits);
 
 		T
 		r = a * std::round(b * p_v.real()),
