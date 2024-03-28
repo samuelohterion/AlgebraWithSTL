@@ -189,10 +189,71 @@ namespace alg {
 
 	template < typename T, class Fun >
 	inline void
+	fOrOn(Vec< T > & p_vec, Fun const & p_fun) {
+
+		for(auto & x : p_vec) {
+			x = p_fun(x);
+		}
+	}
+
+	template < typename T, class Fun >
+	inline void
+	fOrOn(Mat< T > & p_mat, Fun const & p_fun) {
+
+		for(auto & v : p_mat) {
+			for(auto & x : v) {
+				x = p_fun(x);
+			}
+		}
+	}
+
+	template < typename T, class Fun >
+	inline void
+	fOrOn(Tsr< T > & p_tsr, Fun const & p_fun) {
+
+		for(auto & m : p_tsr) {
+			for(auto & v : m) {
+				for(auto & x : v) {
+					x = p_fun(x);
+				}
+			}
+		}
+	}
+
+	template < typename T, class Fun >
+	inline void
 	fOr(Vec< T > const & p_vec, Fun const & p_fun) {
 
-		std::for_each(p_vec.begin(), p_vec.end(), p_fun);
+		for(auto & x : p_vec) {
+			p_fun(x);
+		}
 	}
+
+
+	template < typename T, class Fun >
+	inline void
+	fOr(Mat< T > const & p_mat, Fun const & p_fun) {
+
+		for(auto & v : p_mat) {
+			for(auto & x : v) {
+				p_fun(x);
+			}
+		}
+	}
+
+	template < typename T, class Fun >
+	inline void
+	fOr(Tsr< T > const & p_tsr, Fun const & p_fun) {
+
+		for(auto & m : p_tsr) {
+			for(auto & v : m) {
+				for(auto & x : v) {
+					p_fun(x);
+				}
+			}
+		}
+	}
+
 
 	template < typename T, class Fun >
 	inline  Vec< T >
@@ -670,11 +731,11 @@ inline Mat< T >
 		Vec< T >
 		ret(p_size);
 
-		double rand_max_rec = 1. / RAND_MAX;
+		long double rand_max_rec = 1. / RAND_MAX;
 
 		for(auto & r : ret)
 
-			r = static_cast< double >(std::rand()) * rand_max_rec;
+			r = static_cast< T >(static_cast< long double >(std::rand()) * rand_max_rec);
 
 		return ret;
 	}
@@ -767,6 +828,11 @@ inline Mat< T >
 	template< typename T = double >
 	inline std::ostream
 	& operator << (std::ostream & p_os, Mat< T > const & p_mat) {
+
+		if (p_mat.size() < 1) {
+
+			return p_os;
+		}
 
 		SIZE
 		len = 0,
