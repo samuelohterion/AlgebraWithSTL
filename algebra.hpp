@@ -19,8 +19,12 @@
 #include <type_traits>
 #include <vector>
 
+
 namespace alg {
 
+	int
+	precision = 7;
+	
 	class STR :
 	public std::string {
 
@@ -783,7 +787,7 @@ inline Mat< T >
 
 			ss.str("");
 
-			ss << v;
+			ss << std::setprecision(precision) << v;
 
 			llen = ss.str().length();
 
@@ -802,13 +806,15 @@ inline Mat< T >
 		std::stringstream
 		ss;
 
+		ss << std::setprecision(precision);
+
 		for(auto v : p_vec) {
 
 			if(0 < p_width)
 
 				ss << std::setw(p_width);
 
-			ss << v;
+			ss << std::setprecision(precision) << v;
 		}
 
 		return ss.str();
@@ -1450,6 +1456,11 @@ inline Mat< T >
 	bool
     save(std::string const & p_filename, Vec< T > const & p_vec) {
 
+		int
+		precisionTmp = precision;
+
+		precision = 19;
+
 		std::ofstream
         ofs(p_filename);
 
@@ -1460,6 +1471,8 @@ inline Mat< T >
 		ofs << p_vec;
 
 		ofs.close();
+
+		precision = precisionTmp;
 
 		return true;
 	}

@@ -32,3 +32,5 @@ namespace alg {
 		p_bitset[ byteId ] |= ( static_cast<char>(1 << bitId ) );
 	}
 }
+// int
+// precision = 2;
