@@ -93,6 +93,19 @@ VD
 }
 //@
 
+D
+transformCode(D const & val) {
+	return 
+	val < 2
+		? val < 1
+			? 0
+			: 2
+		: val < 3
+			? 3
+			: 1;
+}
+
+
 int
 main() {
 
@@ -1136,7 +1149,7 @@ main() {
 	// now the brain hopefully knows the letter A
 
 	// this is everything that's needed for remembering a pattern
-#define REM for(UI i = 0; i < len(brain); ++ i) {addBias(o[i]); o[i + 1] = trnsfrm(brain[i] | o[i], act_0p1);}
+#define REM for(UI ii = 0; ii < len(brain); ++ ii) {addBias(o[ii]); o[ii + 1] = trnsfrm(brain[ii] | o[ii], act_0p1);}
 
 	// show our brain an empty vector and hope it will remember the letter A
 	o[0] = {0, 0, 0, 0, 0, 0, 0};
@@ -1190,7 +1203,7 @@ main() {
 
 			for (UI i = 0; i < 6; ++ i) {
 
-				x_y      [j][5 - i] = (j         & (1ul << i)) == (1ul << i);
+				x_y      [j][5 - i] = (j       & (1ul << i)) == (1ul << i);
 				x_times_y[j][5 - i] = ((y * x) & (1ul << i)) == (1ul << i);
 			}
 		}
@@ -1227,9 +1240,9 @@ main() {
 			std::cout
 			<< " --------------------------------------------- " << std::endl
 			<< "| Bits:                     0   correct 0     |" << std::endl
-			<< "| Bits:                     1 incorrect 0     |" << std::endl
-			<< "| Bits:                     2 incorrect 1     |" << std::endl
-			<< "| Bits:                     3   correct 1     |" << std::endl
+			<< "| Bits:                     1   correct 1     |" << std::endl
+			<< "| Bits:                     2 incorrect 0     |" << std::endl
+			<< "| Bits:                     3 incorrect 1     |" << std::endl
 			<< " ---------- ---------------------------------- " << std::endl
 			<< "| Y        |  X        ==>  Z = X * Y         |" << std::endl
 			<< "| 2  1  0  |  2  1  0       5  4  3  2  1  0  |" << std::endl
@@ -1245,7 +1258,7 @@ main() {
 				<< "|  "
 				<< sub(x_y[i], 3, 3)
 				<< "==>  "
-				<< round((2. * mlp.output() + x_times_y[i]))
+				<< trnsfrm(round((2. * mlp.output() + x_times_y[i])), transformCode)
 				<< "|"
 				<< std::endl;
 			}
