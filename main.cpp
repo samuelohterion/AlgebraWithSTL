@@ -99,9 +99,9 @@ transformCode(D const & val) {
 	val < 2
 		? val < 1
 			? 0
-			: 2
+			: 3
 		: val < 3
-			? 3
+			? 2
 			: 1;
 }
 
