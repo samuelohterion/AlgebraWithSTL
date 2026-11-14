@@ -190,7 +190,7 @@ main() {
 	print("u", u);
 	print("insert_val(u, 0, -1.)", insert_val(u, 0, -1.));
 	print("insert_val(u, 4, 4.)", insert_val(u, 4, 4.));
-	print("insert_vec(u, 0, {-4., -3., -1.})", insert_vec(u, 0, {-4., -3., -2.}));
+	print("insert_vec(u, 0, {-3., -2., -1.})", insert_vec(u, 0, {-3., -2., -1.}));
 	print("insert_vec(u, 4, {4., 5., 6.})", insert_vec(u, 4, {4., 5., 6.}));
 	print("insert_val(u, 1, .5)", insert_val(u, 1, .5));
 	print("insert_vec(u, 1, {.25, .5, .75})", insert_vec(u, 1, {.25, .5, .75}));
