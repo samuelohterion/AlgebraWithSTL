@@ -22,8 +22,8 @@
 
 namespace alg {
 
-	int
-	precision = 7;
+	extern int
+	precision;
 	
 	class STR :
 	public std::string {
@@ -289,8 +289,11 @@ namespace alg {
 	//template< typename T = double > inline T _divides(T const & p_v1, T const & p_v2) {return p_v1 / p_v2;}
 
 #define BINOPVV(OP, foo) \
-	template< typename T = double > inline Vec< T > operator OP(Vec< T > const & p_lhs, Vec< T > const & p_rhs) {Vec< T > ret(p_lhs.size()); \
-	std::transform(p_lhs.cbegin(), p_lhs.cend(), p_rhs.cbegin(), ret.begin(), foo()); return ret;}
+	template< typename T = double > inline Vec< T > operator OP(Vec< T > const & p_lhs, Vec< T > const & p_rhs) { \
+		Vec< T > ret(p_lhs.size()); \
+		std::transform(p_lhs.cbegin(), p_lhs.cend(), p_rhs.cbegin(), ret.begin(), foo()); \
+		return ret; \
+	}
 
 	BINOPVV(+, std::plus< T >)
 	BINOPVV(-, std::minus< T >)
@@ -298,8 +301,16 @@ namespace alg {
 	BINOPVV(/, std::divides< T >)
 
 #define BINASSGNOPVV(OP) \
-	template< typename T = double > inline Vec< T > & operator OP(Vec< T > & p_lhs, Vec< T > const & p_rhs) {\
-	auto il = p_lhs.begin(), el = p_lhs.end(); auto ir = p_rhs.cbegin(); while(il != el) {*il OP *ir; ++il; ++ir;} return p_lhs;}
+	template< typename T = double > inline Vec< T > & operator OP(Vec< T > & p_lhs, Vec< T > const & p_rhs) { \
+		auto il = p_lhs.begin(), el = p_lhs.end(); \
+		auto ir = p_rhs.cbegin(); \
+		while(il != el) { \
+			*il OP *ir; \
+			++il; \
+			++ir; \
+		} \
+		return p_lhs; \
+	}
 
 	BINASSGNOPVV(+=)
 	BINASSGNOPVV(-=)
@@ -307,7 +318,12 @@ namespace alg {
 	BINASSGNOPVV(/=)
 
 #define BINOPSV(OP) \
-	template< typename T = double > inline Vec< T > operator OP(T const & p_lhs, Vec< T > p_rhs) {for(T & v : p_rhs) v = p_lhs OP v; return p_rhs;}
+	template< typename T = double > inline Vec< T > operator OP(T const & p_lhs, Vec< T > p_rhs) { \
+		for(T & v : p_rhs) { \
+			v = p_lhs OP v; \
+		} \
+		return p_rhs; \
+	}
 
 	BINOPSV(+)
 	BINOPSV(-)
@@ -315,7 +331,12 @@ namespace alg {
 	BINOPSV(/)
 
 #define BINOPVS(OP) \
-	template< typename T = double > inline Vec< T > operator OP(Vec< T > p_lhs, T const & p_rhs) {for(T & v : p_lhs) v = v OP p_rhs; return p_lhs;}
+	template< typename T = double > inline Vec< T > operator OP(Vec< T > p_lhs, T const & p_rhs) { \
+		for(T & v : p_lhs) { \
+			v = v OP p_rhs; \
+		} \
+		return p_lhs; \
+	}
 
 	BINOPVS(+)
 	BINOPVS(-)
@@ -323,7 +344,12 @@ namespace alg {
 	BINOPVS(/)
 
 #define BINASSGNOPVS(OP) \
-	template< typename T = double > inline Vec< T > & operator OP(Vec< T > & p_lhs, T const & p_rhs) {for(T & v : p_lhs) v OP p_rhs; return p_lhs;}
+	template< typename T = double > inline Vec< T > & operator OP(Vec< T > & p_lhs, T const & p_rhs) { \
+		for(T & v : p_lhs) { \
+			v OP p_rhs; \
+		} \
+		return p_lhs; \
+	}
 
 	BINASSGNOPVS(+=)
 	BINASSGNOPVS(-=)
@@ -331,8 +357,13 @@ namespace alg {
 	BINASSGNOPVS(/=)
 
 #define BINOPMM(OP) \
-	template< typename T = double > inline Mat< T > operator OP(Mat< T > const & p_lhs, Mat< T > const & p_rhs) {\
-	Mat< T > ret(p_lhs.size()); for(SIZE i = 0; i < ret.size(); ++ i) ret[i] = p_lhs[i] OP p_rhs[i];	return ret;}
+	template< typename T = double > inline Mat< T > operator OP(Mat< T > const & p_lhs, Mat< T > const & p_rhs) { \
+		Mat< T > ret(p_lhs.size()); \
+		for(SIZE i = 0; i < ret.size(); ++ i) { \
+			ret[i] = p_lhs[i] OP p_rhs[i]; \
+		} \
+		return ret; \
+	}
 
 	BINOPMM(+)
 	BINOPMM(-)
@@ -340,8 +371,12 @@ namespace alg {
 	BINOPMM(/)
 
 #define BINASSGNOPMM(OP) \
-	template< typename T = double > inline Mat< T > & operator OP(Mat< T > & p_lhs, Mat< T > const & p_rhs) {\
-	for(SIZE i = 0; i < p_lhs.size(); ++ i) p_lhs[i] OP p_rhs[i]; return p_lhs;}
+	template< typename T = double > inline Mat< T > & operator OP(Mat< T > & p_lhs, Mat< T > const & p_rhs) { \
+		for(SIZE i = 0; i < p_lhs.size(); ++ i) { \
+			p_lhs[i] OP p_rhs[i]; \
+		} \
+		return p_lhs; \
+	}
 
 	BINASSGNOPMM(+=)
 	BINASSGNOPMM(-=)
@@ -349,8 +384,13 @@ namespace alg {
 	BINASSGNOPMM(/=)
 
 #define BINOPSM(OP) \
-	template< typename T = double > inline Mat< T > operator OP(T const & p_lhs, Mat< T > const & p_rhs) {Mat< T > ret(p_rhs.size()); \
-	for(SIZE i = 0; i < ret.size(); ++ i) ret[i] = p_lhs OP p_rhs[i]; return ret;}
+	template< typename T = double > inline Mat< T > operator OP(T const & p_lhs, Mat< T > const & p_rhs) { \
+		Mat< T > ret(p_rhs.size()); \
+		for(SIZE i = 0; i < ret.size(); ++ i) { \
+			ret[i] = p_lhs OP p_rhs[i]; \
+		} \
+		return ret; \
+	}
 
 	BINOPSM(+)
 	BINOPSM(-)
@@ -358,8 +398,13 @@ namespace alg {
 	BINOPSM(/)
 
 #define BINOPMS(OP) \
-	template< typename T = double > inline Mat< T > operator OP(Mat< T > const & p_lhs, T const & p_rhs) {Mat< T > ret(p_lhs.size()); \
-	for(SIZE i = 0; i < p_lhs.size(); ++ i) ret[i] = p_lhs[i] OP p_rhs; return ret;}
+	template< typename T = double > inline Mat< T > operator OP(Mat< T > const & p_lhs, T const & p_rhs) { \
+		Mat< T > ret(p_lhs.size()); \
+		for(SIZE i = 0; i < p_lhs.size(); ++ i) { \
+			ret[i] = p_lhs[i] OP p_rhs; \
+		} \
+		return ret; \
+	}
 
 	BINOPMS(+)
 	BINOPMS(-)
@@ -367,8 +412,12 @@ namespace alg {
 	BINOPMS(/)
 
 #define BINASSGNOPMS(OP) \
-	template< typename T = double > inline Mat< T > & operator OP(Mat< T > & p_lhs, T const & p_rhs) {\
-	for(auto & i : p_lhs) i OP p_rhs; return p_lhs;}
+	template< typename T = double > inline Mat< T > & operator OP(Mat< T > & p_lhs, T const & p_rhs) { \
+		for(auto & i : p_lhs) { \
+			i OP p_rhs; \
+		} \
+		return p_lhs; \
+	}
 
 	BINASSGNOPMS(+=)
 	BINASSGNOPMS(-=)
@@ -376,8 +425,13 @@ namespace alg {
 	BINASSGNOPMS(/=)
 
 #define BINOPVM(OP) \
-	template< typename T = double > inline Mat< T > operator OP(Vec< T > const & p_lhs, Mat< T > const & p_rhs) {Mat< T > ret(p_rhs.size()); \
-	for(SIZE i = 0; i < ret.size(); ++ i) ret[i] = p_lhs OP p_rhs[i]; return ret;}
+	template< typename T = double > inline Mat< T > operator OP(Vec< T > const & p_lhs, Mat< T > const & p_rhs) { \
+		Mat< T > ret(p_rhs.size()); \
+		for(SIZE i = 0; i < ret.size(); ++ i) { \
+			ret[i] = p_lhs OP p_rhs[i]; \
+		} \
+		return ret; \
+	}
 
 	BINOPVM(+)
 	BINOPVM(-)
@@ -385,8 +439,15 @@ namespace alg {
 	BINOPVM(/)
 
 #define BINOPMV(OP) \
-	template< typename T = double > inline Mat< T > operator OP(Mat< T > const & p_lhs, Vec< T > const & p_rhs) {Mat< T > ret(p_lhs.size(), Vec< T >(p_lhs[0])); \
-	for(SIZE r = 0; r < ret.size(); ++ r) for(SIZE c = 0; c < p_lhs[r].size(); ++ c) ret[r][c] = p_lhs[r][c] OP p_rhs[r]; return ret;}
+	template< typename T = double > inline Mat< T > operator OP(Mat< T > const & p_lhs, Vec< T > const & p_rhs) { \
+		Mat< T > ret(p_lhs.size(), Vec< T >(p_lhs[0])); \
+		for(SIZE r = 0; r < ret.size(); ++ r) { \
+			for(SIZE c = 0; c < p_lhs[r].size(); ++ c) { \
+				ret[r][c] = p_lhs[r][c] OP p_rhs[r]; \
+			} \
+		} \
+		return ret; \
+	}
 
 	BINOPMV(+)
 	BINOPMV(-)
@@ -394,18 +455,24 @@ namespace alg {
 	BINOPMV(/)
 
 #define BINASSGNOPMV(OP) \
-	template< typename T = double > inline Mat< T > & operator OP(Mat< T > & p_lhs, Vec< T > const & p_rhs) {\
-	SIZE rows = nrows(p_lhs), cols = ncols(p_lhs); \
-	for(SIZE r = 0; r < rows; ++ r) for(SIZE c = 0; c < cols; ++ c) p_lhs[r][c] OP p_rhs[r]; return p_lhs;}
+	template< typename T = double > inline Mat< T > & operator OP(Mat< T > & p_lhs, Vec< T > const & p_rhs) { \
+		SIZE rows = nrows(p_lhs), cols = ncols(p_lhs); \
+		for(SIZE r = 0; r < rows; ++ r) { \
+			for(SIZE c = 0; c < cols; ++ c) { \
+				p_lhs[r][c] OP p_rhs[r]; \
+			} \
+		} \
+		return p_lhs; \
+    }
 
-	BINASSGNOPMV(+=)
-	BINASSGNOPMV(-=)
-	BINASSGNOPMV(*=)
-	BINASSGNOPMV(/=)
+    BINASSGNOPMV(+=)
+    BINASSGNOPMV(-=)
+    BINASSGNOPMV(*=)
+    BINASSGNOPMV(/=)
 
-	template< typename T = double >
-	inline Mat< T >
-	t(Mat< T > const & p_mat) {
+template< typename T = double >
+inline Mat< T >
+t(Mat< T > const & p_mat) {
 
 	Mat< T >
 	ret(ncols(p_mat), Vec< T >(nrows(p_mat)));

@@ -2,6 +2,8 @@
 
 namespace alg {
 
+    int precision = 2;
+
 	bool
 	gbit( char * p_bitset, SIZE const & p_bitId ) {
 

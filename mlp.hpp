@@ -1,6 +1,6 @@
 #ifndef MLP_HPP
 #define MLP_HPP
-#include "algebra.hpp"
+#include "algebra.cpp"
 
 namespace alg {
 	//@Class Multilayer Perceptron
