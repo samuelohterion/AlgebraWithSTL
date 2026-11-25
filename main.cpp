@@ -213,7 +213,7 @@ main() {
 //@
 	CodePrinter::WFE();
 
-	codeprinter.print("operator vector");
+	codeprinter.print("unary operator vector");
 //@operator vector
 	print("+u", +u);
 	print("-u", -u);
