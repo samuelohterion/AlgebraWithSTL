@@ -84,6 +84,9 @@ Vector times Vector is the scalar product
 
 
 ## Running main
+```
+$ make run
+```
 
 ./main
 
