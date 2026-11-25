@@ -1,17 +1,36 @@
+// {
+//     "version": "0.2.0",
+//     "configurations": [
+//         {
+//             "name": "Run main",
+//             "type": "cppdbg",
+//             "request": "launch",
+//             "program": "${workspaceFolder}/main",
+//             "args": [],
+//             "cwd": "${workspaceFolder}",
+//             "stopAtEntry": false,
+//             "externalConsole": false,
+//             "MIMode": "gdb",
+//             "preLaunchTask": "build"
+//         }
+//     ]
+// }
+
 {
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "Run main",
+            "name": "AlgebraWithSTL",
             "type": "cppdbg",
             "request": "launch",
             "program": "${workspaceFolder}/main",
             "args": [],
-            "cwd": "${workspaceFolder}",
             "stopAtEntry": false,
+            "cwd": "${workspaceFolder}",
+            "environment": [],
             "externalConsole": false,
             "MIMode": "gdb",
-            "preLaunchTask": "build"
+            "preLaunchTask": "Build AlgebraWithSTL"
         }
     ]
 }

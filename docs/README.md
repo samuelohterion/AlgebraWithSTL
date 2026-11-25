@@ -46,7 +46,7 @@ cp.print( "examples" );
 // Examples for using algebra.hpp
 // -------- --- ----- -----------
   // next with [ENTER]
-  // exit with x or X or q or Q and [ENTER] + [ENTER]
+  // exit with x or X or q or Q + [ENTER]
   // do something nice here!
 //@
 // WFE wait for enter, can be found in the main.cpp, also the print() function

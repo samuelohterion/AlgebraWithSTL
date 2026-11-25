@@ -24,7 +24,7 @@ namespace alg {
 
 	extern int
 	precision;
-	
+
 	class STR :
 	public std::string {
 
@@ -116,16 +116,16 @@ namespace alg {
 
 	typedef std::size_t SIZE;
 
+	bool
+	gbit( char * p_bitset, SIZE const & p_bitId );
+
 	template < typename SOME_INTEGER_TYPE >
 	bool
 	gbit(SOME_INTEGER_TYPE const & p_bitset, SIZE const & p_bitId) {
 
 		return (p_bitset >> p_bitId) & 1;
 	}	
-
-	bool
-	gbit( char * p_bitset, SIZE const & p_bitId );
-
+	
 	void
 	cbit( char * p_bitset, SIZE const & p_bitId );
 
@@ -136,6 +136,9 @@ namespace alg {
 		p_bitset &= (~(1 << p_bitId));
 	}
 
+	void
+	sbit( char * p_bitset, SIZE const & p_bitId );
+
 	template < typename SOME_INTEGER_TYPE >
 	void
 	sbit(SOME_INTEGER_TYPE  & p_bitset, SIZE const & p_bitId) {
@@ -143,9 +146,7 @@ namespace alg {
 		p_bitset |= (1 << p_bitId);
 	}
 
-	void
-	sbit( char * p_bitset, SIZE const & p_bitId );
-	
+
 	// vector
 	template < typename T > using
 	Vec = std::vector< T >;
@@ -1089,7 +1090,7 @@ inline Mat< T >
 
 		while (p_from < (sizeof (unsigned long long) << 3)) {
 
-			if (! gbit<unsigned long long>(p_idx, p_from))
+			if (! gbit<unsigned long long const>(p_idx, p_from))
 
 				return p_from;
 

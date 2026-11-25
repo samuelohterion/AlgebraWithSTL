@@ -1,6 +1,6 @@
-#include "mlp.hpp"
+// #include "mlp.hpp"
 #include "codeprinter.hpp"
-
+#include "mlp.hpp"
 using namespace alg;
 //@some typedefs for std::vector< T >
 // just for abbr.
@@ -124,7 +124,7 @@ main() {
 	// Examples for using algebra.hpp
 	// -------- --- ----- -----------
 	// next with [ENTER]
-	// exit with x or X or q or Q and [ENTER] + [ENTER]
+	// exit with x or X or q or Q + [ENTER]
 //@
 	CodePrinter::WFE();
 
