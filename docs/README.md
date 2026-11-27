@@ -680,14 +680,21 @@ Press [ENTER] for next show!
 c++ - code:
 ```
 VD
-w = {-1., 1.};
+v2 = {-1., 1.},
+v4 = {1., 2., 3., 4.};
 
 print("a", a);
-print("w", w);
-print("a + w", a + w);
-print("a - w", a - w);
-print("a * w", a * w);
-print("a / w", a / w);
+print("v2", v2);
+print("a + v2", a + v2);
+print("a - v2", a - v2);
+print("a * v2", a * v2);
+print("a / v2", a / v2);
+
+print("v4", v4);
+print("~(~a + v4)", ~(~a + v4));
+print("~(~a - v4)", ~(~a - v4));
+print("~(~a * v4)", ~(~a * v4));
+print("~(~a / v4)", ~(~a / v4));
 ```
 
 out:
@@ -696,24 +703,43 @@ a
   1  2  3  4
  -2  0  2  0
 
-w
+v2
 -1  1  
 
-a + w
+a + v2
   0  1  2  3
  -1  1  3  1
 
-a - w
+a - v2
   2  3  4  5
  -3 -1  1 -1
 
-a * w
+a * v2
  -1 -2 -3 -4
  -2  0  2  0
 
-a / w
+a / v2
  -1 -2 -3 -4
  -2  0  2  0
+
+v4
+1  2  3  4  
+
+~(~a + v4)
+  2  4  6  8
+ -1  2  5  4
+
+~(~a - v4)
+  0  0  0  0
+ -3 -2 -1 -4
+
+~(~a * v4)
+  1  4  9 16
+ -2  0  6  0
+
+~(~a / v4)
+    1    1    1    1
+   -2    0 0.67    0
 ```
 
 Press [ENTER] for next show!
@@ -721,27 +747,27 @@ Press [ENTER] for next show!
 #### [matrix assignment operator vector]
 c++ - code:
 ```
-print("a += w", a += w);
-print("a -= w", a -= w);
-print("a *= w", a *= w);
-print("a /= w", a /= w);
+print("a += v2", a += v2);
+print("a -= v2", a -= v2);
+print("a *= v2", a *= v2);
+print("a /= v2", a /= v2);
 ```
 
 out:
 ```
-a += w
+a += v2
   0  1  2  3
  -1  1  3  1
 
-a -= w
+a -= v2
   1  2  3  4
  -2  0  2  0
 
-a *= w
+a *= v2
  -1 -2 -3 -4
  -2  0  2  0
 
-a /= w
+a /= v2
   1  2  3  4
  -2  0  2  0
 ```

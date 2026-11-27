@@ -315,23 +315,30 @@ main() {
 	codeprinter.print("matrix operator vector");
 //@matrix operator vector
 	VD
-	w = {-1., 1.};
+	v2 = {-1., 1.},
+	v4 = {1., 2., 3., 4.};
 
 	print("a", a);
-	print("w", w);
-	print("a + w", a + w);
-	print("a - w", a - w);
-	print("a * w", a * w);
-	print("a / w", a / w);
+	print("v2", v2);
+	print("a + v2", a + v2);
+	print("a - v2", a - v2);
+	print("a * v2", a * v2);
+	print("a / v2", a / v2);
+
+	print("v4", v4);
+	print("~(~a + v4)", ~(~a + v4));
+	print("~(~a - v4)", ~(~a - v4));
+	print("~(~a * v4)", ~(~a * v4));
+	print("~(~a / v4)", ~(~a / v4));
 //@
 	CodePrinter::WFE();
 
 	codeprinter.print("matrix assignment operator vector");
 //@matrix assignment operator vector
-	print("a += w", a += w);
-	print("a -= w", a -= w);
-	print("a *= w", a *= w);
-	print("a /= w", a /= w);
+	print("a += v2", a += v2);
+	print("a -= v2", a -= v2);
+	print("a *= v2", a *= v2);
+	print("a /= v2", a /= v2);
 //@
 	CodePrinter::WFE();
 
