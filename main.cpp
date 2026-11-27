@@ -1274,6 +1274,7 @@ main() {
 			<< " ---------- ---------------------------------- " << std::endl << std::endl;
 		}
 	}
+	std::cout << "Thanks for your attention!" << std::endl;
 //@
 	CodePrinter::WFE();
 

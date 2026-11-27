@@ -3733,6 +3733,6 @@ sse:
 | 1  1  1  |  1  1  1  ==>  1  1  0  0  0  1  |
  ---------- ---------------------------------- 
 ```
-
+Thanks for your attention!
 Press [ENTER] for next show!
 
